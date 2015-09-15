@@ -1,0 +1,288 @@
+﻿using idleApp.Class;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+//using WebSocketSharp;
+
+namespace idleApp
+{
+    public partial class MainForm : Form
+    {
+        List<AppMember> applist;
+        RunApp runapp;
+        //Client wbc;
+
+        #region 常用参数
+        string regexID = "(?<=\\brun/)\\w*\\b";
+        string regexCard = "<span class=\"progress_info_bold\">([^<]*)</span>";
+        int cardTime = 1200;//秒
+        string[] defBackList = new string[] { "303700", "368020", "335590", "267420" };
+        #endregion
+
+        BackgroundWorker _bw;
+
+        public MainForm()
+        {
+            InitializeComponent();
+            this.Text = "卡牌小工具4.1.2 情怀版 By zha7";
+            //初始化
+            initializeConfig();
+
+            runapp = new RunApp();
+            runapp.mainThread += new RunApp.uiDelegate(LoadAppInfo);
+
+            applist = new List<AppMember>();
+
+            //int Snum = getRandomNum();
+            //Snumlabel.Text = "SNum:" + Snum.ToString();
+            //wbc = new Client(Snum);
+
+            _bw = new BackgroundWorker();
+            _bw.DoWork += bw_DoWork;
+            _bw.RunWorkerCompleted += bw_RunWorkerCompleted;
+
+#if !DEBUG
+            MessageBox.Show("你的徽章页面有可能是大余1页的，请选择有卡挂的页面复制源码", "游戏很多的大佬请注意");
+#endif
+        }
+
+        #region 更新Form
+        /// <summary>
+        /// 获取挂机消息
+        /// </summary>
+        /// <param name="time"></param>
+        /// <param name="status"></param>
+        /// <param name="id"></param>
+        private void LoadAppInfo(string time, string status, string id)
+        {
+            switch (status)
+            {
+                case "Start":
+
+                    this.Invoke(new Action(delegate { LoadAppImage(id); }));
+                    UpdateForm(timelabel, time);
+
+                    for (int i = 0; i < applist.Count; i++)
+                    {
+                        if (applist[i].Id == id)
+                        {
+                            UpdateForm(game_label, applist[i].Name);
+                            return;
+                        }
+
+                    }
+                    break;
+                case "Exit":
+                    UpdateForm(timelabel, "Null");
+                    UpdateForm(game_label, "");
+                    break;
+                case "End":
+                    UpdateForm(timelabel, "Null");
+                    UpdateForm(game_label, "");
+                    this.Invoke(new Action(delegate { LoadAppImage(status); }));
+                    startToolStripMenuItem.Text = "开始";
+                    applistView.Items.Clear();
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 更新label
+        /// </summary>
+        /// <param name="label">label name</param>
+        /// <param name="param">value</param>
+        private void UpdateForm(Label label, string param)
+        {
+            this.Invoke(new Action(delegate { label.Text = param; }));
+        }
+
+        /// <summary>
+        /// 获取图
+        /// </summary>
+        /// <param name="appid">ID</param>
+        public void LoadAppImage(string appid)
+        {
+            if (appid != "End")
+            {
+                try
+                {
+                    picApp.LoadAsync("http://cdn.akamai.steamstatic.com/steam/apps/" + appid + "/capsule_184x69.jpg");
+                }
+                catch (Exception e)
+                {
+                    System.Console.WriteLine("Error From:" + e.TargetSite + " Message" + e.Message);
+                }
+            }
+            else
+            {
+                picApp.Image = null;
+                Graphics g = picApp.CreateGraphics();
+                g.Clear(Color.White);
+            }
+
+        }
+        #endregion
+
+        #region 事件
+
+        private void getIDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _bw.RunWorkerAsync("Start to Get");
+        }
+
+        private void startToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (applist.Count != 0)
+            {
+                if (runapp.Enabled == false)
+                {
+                    runapp.List = applist;
+                    runapp.Run();
+                    startToolStripMenuItem.Text = "停止";
+                }
+                else
+                {
+                    runapp.Stop();
+                    startToolStripMenuItem.Text = "开始";
+                }
+            }
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            runapp.Stop();
+        }
+
+        private void clearTextbutton_Click(object sender, EventArgs e)
+        {
+            scrtextBox.Clear();
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("=========================" + "\n如果不能加载游戏名称\n应该是网络问题\n因为游戏名称是从steam官网上拉下来的"
+                +"\n右下角的图片同理，不影响挂机的。"
+                + "\n========================="
+                + "\n如果游戏没有启动，请打开data文件夹，把里边的文件解除锁定"
+                +"\n右键文件-属性 就可以看到", "说明");
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://zha7.bifidy.net");
+        }
+
+        private void dELToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(applistView.SelectedItems.Count >0)
+            {
+                applist.RemoveAt(applistView.SelectedItems[0].Index);
+                applistView.Items.Remove(applistView.SelectedItems[0]);
+            }
+        }
+
+        #endregion
+
+        #region 其他方法
+
+        public int getRandomNum()
+        {
+            int minValue, maxValue;
+            minValue = 100000;
+            maxValue = 900000;
+            Random ra = new Random(unchecked((int)DateTime.Now.Ticks));
+            int tmp = 0;
+            tmp = ra.Next(minValue, maxValue); //随机取数
+            return tmp;
+        }
+
+        private string getClipboard()
+        {
+            // GetDataObject检索当前剪贴板上的数据     
+            IDataObject iData = Clipboard.GetDataObject();
+            // 将数据与指定的格式进行匹配，返回bool   
+            if (iData.GetDataPresent(DataFormats.Text))
+            {
+                // GetData检索数据并指定一个格式    
+                return (string)iData.GetData(DataFormats.Text);
+            }
+            else
+            {
+                MessageBox.Show("请复制徽章页面的源代码!", "错误");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 初始化参数
+        /// </summary>
+        private void initializeConfig()
+        {
+            regexIDtextBox.Text = regexID;
+            regCardtextBox.Text = regexCard;
+            timeTextBox.Text = (1200 / 60).ToString();
+            foreach(string value in defBackList)
+            {
+                ListViewItem lvi = new ListViewItem();
+                lvi.Text = value;
+                backlistView.Items.Add(lvi);
+            }
+        }
+
+        #endregion
+
+        #region 处理源码
+        private void bw_DoWork(object sender, DoWorkEventArgs e)
+        {
+            GetIDName getidname;          
+            if (scrtextBox.Text.Length == 0)
+            {
+                string html = "";
+                this.Invoke(new Action(delegate { html = getClipboard(); }));
+                getidname = new GetIDName(html);
+                e.Result = getidname.Getid();// 这会传递给 RunWorkerCompleted
+            }
+            else
+            {
+                getidname = new GetIDName(scrtextBox.Text);
+                e.Result = getidname.Getid();
+            }
+        }
+
+        private void bw_RunWorkerCompleted(object sender,RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+                Console.WriteLine("You canceled!");
+            else if (e.Error != null)
+                Console.WriteLine("Worker exception: " + e.Error.ToString());
+            else
+            {
+                List<AppMember> tmp = (List<AppMember>)e.Result;
+                LoadAppData(tmp);
+            }
+        }
+
+        private void LoadAppData(List<AppMember> member)
+        {
+            applist = member;
+            applistView.Items.Clear();
+            if (member != null && member.Count > 0)
+            {
+                for (int i = 0; i < member.Count; i++)
+                {
+                    ListViewItem lvi = new ListViewItem();
+                    lvi.Text = member[i].Id;
+                    lvi.SubItems.Add(member[i].Name);
+                    lvi.SubItems.Add(member[i].CardNum);
+                    applistView.Items.Add(lvi);
+                }
+            }
+        }
+        #endregion
+    }
+}
