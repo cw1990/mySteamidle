@@ -142,6 +142,7 @@ namespace idleApp
                 if (runapp.Enabled == false)
                 {
                     runapp.List = applist;
+                    runapp.Time = cardTime;
                     runapp.Run();
                     startToolStripMenuItem.Text = "停止";
                 }
@@ -163,15 +164,6 @@ namespace idleApp
             scrtextBox.Clear();
         }
 
-        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("=========================" + "\n如果不能加载游戏名称\n应该是网络问题\n因为游戏名称是从steam官网上拉下来的"
-                +"\n右下角的图片同理，不影响挂机的。"
-                + "\n========================="
-                + "\n如果游戏没有启动，请打开data文件夹，把里边的文件解除锁定"
-                +"\n右键文件-属性 就可以看到", "说明");
-        }
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("http://zha7.bifidy.net");
@@ -183,6 +175,15 @@ namespace idleApp
             {
                 applist.RemoveAt(applistView.SelectedItems[0].Index);
                 applistView.Items.Remove(applistView.SelectedItems[0]);
+            }
+        }
+
+        private void timeTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //8是退格
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char)8)
+            {
+                e.Handled = true;
             }
         }
 
@@ -226,7 +227,11 @@ namespace idleApp
             regexIDtextBox.Text = regexID;
             regCardtextBox.Text = regexCard;
             timeTextBox.Text = (1200 / 60).ToString();
-            foreach(string value in defBackList)
+
+            HelpString help = new HelpString();
+            helpRichTextBox.Text = help.ToString();
+
+            foreach (string value in defBackList)
             {
                 ListViewItem lvi = new ListViewItem();
                 lvi.Text = value;
@@ -245,11 +250,15 @@ namespace idleApp
                 string html = "";
                 this.Invoke(new Action(delegate { html = getClipboard(); }));
                 getidname = new GetIDName(html);
+                getidname.RegexID = regexIDtextBox.Text;
+                getidname.RegexCard = regCardtextBox.Text;
                 e.Result = getidname.Getid();// 这会传递给 RunWorkerCompleted
             }
             else
             {
                 getidname = new GetIDName(scrtextBox.Text);
+                getidname.RegexID = regexIDtextBox.Text;
+                getidname.RegexCard = regCardtextBox.Text;
                 e.Result = getidname.Getid();
             }
         }

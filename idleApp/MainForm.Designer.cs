@@ -34,11 +34,9 @@
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.getIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dELToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.Snumlabel = new System.Windows.Forms.Label();
             this.clearTextbutton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -51,32 +49,33 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.timeTextBox = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.backDelButton = new System.Windows.Forms.Button();
+            this.backAddButton = new System.Windows.Forms.Button();
             this.backlistView = new System.Windows.Forms.ListView();
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.backAddButton = new System.Windows.Forms.Button();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.backDelButton = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.regexIDtextBox = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.regCardtextBox = new System.Windows.Forms.TextBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.timeTextBox = new System.Windows.Forms.TextBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.helpTextBox = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.regexIDtextBox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.helpRichTextBox = new System.Windows.Forms.RichTextBox();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picApp)).BeginInit();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -85,7 +84,6 @@
             this.startToolStripMenuItem,
             this.getIDToolStripMenuItem,
             this.dELToolStripMenuItem,
-            this.helpToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -113,13 +111,6 @@
             this.dELToolStripMenuItem.Size = new System.Drawing.Size(80, 21);
             this.dELToolStripMenuItem.Text = "删除选中项";
             this.dELToolStripMenuItem.Click += new System.EventHandler(this.dELToolStripMenuItem_Click);
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(76, 21);
-            this.helpToolStripMenuItem.Text = "帮助(重要)";
-            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -158,20 +149,6 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "本体";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.groupBox4);
-            this.tabPage2.Controls.Add(this.groupBox3);
-            this.tabPage2.Controls.Add(this.groupBox2);
-            this.tabPage2.Controls.Add(this.groupBox1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(510, 310);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "设置";
-            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // Snumlabel
             // 
@@ -278,14 +255,89 @@
             this.columnHeader3.Text = "Card";
             this.columnHeader3.Width = 100;
             // 
-            // tabPage3
+            // tabPage2
             // 
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(510, 310);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "控制台";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.tabPage2.Controls.Add(this.groupBox4);
+            this.tabPage2.Controls.Add(this.groupBox3);
+            this.tabPage2.Controls.Add(this.groupBox2);
+            this.tabPage2.Controls.Add(this.groupBox1);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(510, 310);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "设置";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.helpRichTextBox);
+            this.groupBox4.Location = new System.Drawing.Point(347, 3);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(155, 304);
+            this.groupBox4.TabIndex = 5;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "帮助";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.timeTextBox);
+            this.groupBox3.Controls.Add(this.label5);
+            this.groupBox3.Location = new System.Drawing.Point(141, 119);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(200, 188);
+            this.groupBox3.TabIndex = 4;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "设置";
+            // 
+            // timeTextBox
+            // 
+            this.timeTextBox.Location = new System.Drawing.Point(134, 17);
+            this.timeTextBox.MaxLength = 5;
+            this.timeTextBox.Name = "timeTextBox";
+            this.timeTextBox.Size = new System.Drawing.Size(60, 21);
+            this.timeTextBox.TabIndex = 1;
+            this.timeTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.timeTextBox_KeyPress);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 21);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(125, 12);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "每张卡所需时间(分钟)";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.backDelButton);
+            this.groupBox2.Controls.Add(this.backAddButton);
+            this.groupBox2.Controls.Add(this.backlistView);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Left;
+            this.groupBox2.Location = new System.Drawing.Point(3, 3);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(132, 304);
+            this.groupBox2.TabIndex = 3;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "黑名单";
+            // 
+            // backDelButton
+            // 
+            this.backDelButton.Location = new System.Drawing.Point(66, 275);
+            this.backDelButton.Name = "backDelButton";
+            this.backDelButton.Size = new System.Drawing.Size(60, 25);
+            this.backDelButton.TabIndex = 3;
+            this.backDelButton.Text = "Del";
+            this.backDelButton.UseVisualStyleBackColor = true;
+            // 
+            // backAddButton
+            // 
+            this.backAddButton.Location = new System.Drawing.Point(6, 275);
+            this.backAddButton.Name = "backAddButton";
+            this.backAddButton.Size = new System.Drawing.Size(60, 25);
+            this.backAddButton.TabIndex = 2;
+            this.backAddButton.Text = "Add";
+            this.backAddButton.UseVisualStyleBackColor = true;
             // 
             // backlistView
             // 
@@ -318,52 +370,12 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "正则表达式";
             // 
-            // groupBox2
+            // regCardtextBox
             // 
-            this.groupBox2.Controls.Add(this.backDelButton);
-            this.groupBox2.Controls.Add(this.backAddButton);
-            this.groupBox2.Controls.Add(this.backlistView);
-            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.groupBox2.Location = new System.Drawing.Point(3, 3);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(132, 304);
-            this.groupBox2.TabIndex = 3;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "黑名单";
-            // 
-            // backAddButton
-            // 
-            this.backAddButton.Location = new System.Drawing.Point(6, 275);
-            this.backAddButton.Name = "backAddButton";
-            this.backAddButton.Size = new System.Drawing.Size(60, 25);
-            this.backAddButton.TabIndex = 2;
-            this.backAddButton.Text = "Add";
-            this.backAddButton.UseVisualStyleBackColor = true;
-            // 
-            // backDelButton
-            // 
-            this.backDelButton.Location = new System.Drawing.Point(66, 275);
-            this.backDelButton.Name = "backDelButton";
-            this.backDelButton.Size = new System.Drawing.Size(60, 25);
-            this.backDelButton.TabIndex = 3;
-            this.backDelButton.Text = "Del";
-            this.backDelButton.UseVisualStyleBackColor = true;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 20);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(53, 12);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "获取ID用";
-            // 
-            // regexIDtextBox
-            // 
-            this.regexIDtextBox.Location = new System.Drawing.Point(6, 36);
-            this.regexIDtextBox.Name = "regexIDtextBox";
-            this.regexIDtextBox.Size = new System.Drawing.Size(188, 21);
-            this.regexIDtextBox.TabIndex = 1;
+            this.regCardtextBox.Location = new System.Drawing.Point(6, 80);
+            this.regCardtextBox.Name = "regCardtextBox";
+            this.regCardtextBox.Size = new System.Drawing.Size(188, 21);
+            this.regCardtextBox.TabIndex = 3;
             // 
             // label4
             // 
@@ -374,59 +386,40 @@
             this.label4.TabIndex = 2;
             this.label4.Text = "获取Card数量用";
             // 
-            // regCardtextBox
+            // regexIDtextBox
             // 
-            this.regCardtextBox.Location = new System.Drawing.Point(6, 80);
-            this.regCardtextBox.Name = "regCardtextBox";
-            this.regCardtextBox.Size = new System.Drawing.Size(188, 21);
-            this.regCardtextBox.TabIndex = 3;
+            this.regexIDtextBox.Location = new System.Drawing.Point(6, 36);
+            this.regexIDtextBox.Name = "regexIDtextBox";
+            this.regexIDtextBox.Size = new System.Drawing.Size(188, 21);
+            this.regexIDtextBox.TabIndex = 1;
             // 
-            // groupBox3
+            // label3
             // 
-            this.groupBox3.Controls.Add(this.timeTextBox);
-            this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Location = new System.Drawing.Point(141, 119);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(200, 188);
-            this.groupBox3.TabIndex = 4;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "设置";
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(7, 20);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(53, 12);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "获取ID用";
             // 
-            // label5
+            // tabPage3
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 21);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(125, 12);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "每张卡所需时间(分钟)";
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(510, 310);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "控制台";
+            this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // timeTextBox
+            // helpRichTextBox
             // 
-            this.timeTextBox.Location = new System.Drawing.Point(134, 17);
-            this.timeTextBox.Name = "timeTextBox";
-            this.timeTextBox.Size = new System.Drawing.Size(60, 21);
-            this.timeTextBox.TabIndex = 1;
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.helpTextBox);
-            this.groupBox4.Location = new System.Drawing.Point(347, 3);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(155, 304);
-            this.groupBox4.TabIndex = 5;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "帮助";
-            // 
-            // helpTextBox
-            // 
-            this.helpTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.helpTextBox.Location = new System.Drawing.Point(3, 17);
-            this.helpTextBox.Multiline = true;
-            this.helpTextBox.Name = "helpTextBox";
-            this.helpTextBox.ReadOnly = true;
-            this.helpTextBox.Size = new System.Drawing.Size(149, 284);
-            this.helpTextBox.TabIndex = 0;
+            this.helpRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.helpRichTextBox.Location = new System.Drawing.Point(3, 17);
+            this.helpRichTextBox.Name = "helpRichTextBox";
+            this.helpRichTextBox.ReadOnly = true;
+            this.helpRichTextBox.Size = new System.Drawing.Size(149, 284);
+            this.helpRichTextBox.TabIndex = 0;
+            this.helpRichTextBox.Text = "";
             // 
             // MainForm
             // 
@@ -448,15 +441,14 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picApp)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -467,7 +459,6 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem startToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem getIDToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dELToolStripMenuItem;
         private System.Windows.Forms.TabControl tabControl1;
@@ -501,7 +492,7 @@
         private System.Windows.Forms.TextBox timeTextBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.TextBox helpTextBox;
+        private System.Windows.Forms.RichTextBox helpRichTextBox;
     }
 }
 
