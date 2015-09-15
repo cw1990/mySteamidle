@@ -13,7 +13,52 @@ namespace idleApp.Class
     class GetIDName
     {
         string srchtml;
-        string[] badlist = new string[] { "303700", "368020", "335590", "267420" };
+        List<string> badlist = new List<string>() { "303700", "368020", "335590", "267420" };
+
+        #region 属性
+        string regexID;
+        string regexCard;
+
+        public string RegexID
+        {
+            get
+            {
+                return regexID;
+            }
+
+            set
+            {
+                regexID = value;
+            }
+        }
+
+        public string RegexCard
+        {
+            get
+            {
+                return regexCard;
+            }
+
+            set
+            {
+                regexCard = value;
+            }
+        }
+
+        public List<string> Badlist
+        {
+            get
+            {
+                return badlist;
+            }
+
+            set
+            {
+                badlist = value;
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// 构造函数
@@ -30,6 +75,7 @@ namespace idleApp.Class
 		public List<AppMember> Getid()
         {
 
+            #region test
             //<div class=\"badge_title_stats_playtime\">([^<]*)</div> 67-9=58
 
             //<span class=\"progress_info_bold\">([^<]*)</span> 54
@@ -37,12 +83,14 @@ namespace idleApp.Class
             //<div class=\"card_drop_info_body\">([^<]*)</div> 55
 
             //<div class="card_drop_info_dialog" id="(.*?)" style 53
-
+            #endregion
+            if (string.IsNullOrEmpty(regexID) || string.IsNullOrEmpty(regexCard))
+                return null;
 
             //id
-            MatchCollection mc_id = Regex.Matches(srchtml, "(?<=\\brun/)\\w*\\b");
+            MatchCollection mc_id = Regex.Matches(srchtml, regexID);
             //name
-            MatchCollection mc_card = Regex.Matches(srchtml, "<span class=\"progress_info_bold\">([^<]*)</span>");
+            MatchCollection mc_card = Regex.Matches(srchtml, regexCard);
             List<string> tmpcard = new List<string>();
             for (int i = 0; i < mc_card.Count; i++)
             {
@@ -78,6 +126,11 @@ namespace idleApp.Class
             }
         }
 
+        /// <summary>
+        /// 拉取Name
+        /// </summary>
+        /// <param name="appid"></param>
+        /// <returns></returns>
         private string GetAppName(String appid)
         {
             try

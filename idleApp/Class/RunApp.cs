@@ -14,7 +14,9 @@ namespace idleApp
         List<AppMember> list;
         public bool Enabled = false;
         int mIndex = 0;
+        int time;
 
+        #region 属性
         public List<AppMember> List
         {
             set
@@ -22,6 +24,23 @@ namespace idleApp
                 list = value;
             }
         }
+
+        public int Time
+        {
+            get
+            {
+                return time;
+            }
+
+            set
+            {
+                time = value;
+            }
+        }
+
+        public bool InIdle { get { return gameApp != null && !gameApp.HasExited; } }
+
+        #endregion
 
         public RunApp()
         {
@@ -40,7 +59,7 @@ namespace idleApp
 #endif
 #if !DEBUG
             //12min
-            int tmp_time = 1200 * 1000;
+            int tmp_time = time * 1000;
 			appTimer = new Timer(tmp_time * card);
 #endif
             StartApp();
@@ -96,8 +115,6 @@ namespace idleApp
                 setLog(DateTime.Now.ToString(), "End", mArguments);
             }
         }
-
-        public bool InIdle { get { return gameApp != null && !gameApp.HasExited; } }
 
         private void StartApp()
         {
