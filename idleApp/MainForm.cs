@@ -29,7 +29,7 @@ namespace idleApp
         public MainForm()
         {
             InitializeComponent();
-            this.Text = "卡牌小工具4.1.2 情怀版 By zha7";
+            this.Text = "卡牌小工具4.1.3 情怀版 By zha7";
             //初始化
             initializeConfig();
 
