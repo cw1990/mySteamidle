@@ -50,9 +50,8 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging, Version=2.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Common.Logging.2.0.0\lib\2.0\Common.Logging.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net35\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -66,7 +65,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\AppMember.cs" />
+    <Compile Include="Class\Config.cs" />
+    <Compile Include="Class\FileHelper.cs" />
     <Compile Include="Class\GetIDName.cs" />
+    <Compile Include="Class\HelpString.cs" />
+    <Compile Include="Class\JsonHelper.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

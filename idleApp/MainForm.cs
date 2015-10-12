@@ -20,8 +20,9 @@ namespace idleApp
         #region 常用参数
         string regexID = "(?<=\\brun/)\\w*\\b";
         string regexCard = "<span class=\"progress_info_bold\">([^<]*)</span>";
-        int cardTime = 1200;//秒
-        string[] defBackList = new string[] { "303700", "368020", "335590", "267420" };
+        int cardTime = 20;//分钟
+        List<string> defBlackList = new List<string> { "303700", "368020", "335590", "267420" };
+        Config config = new Config();
         #endregion
 
         BackgroundWorker _bw;
@@ -142,7 +143,7 @@ namespace idleApp
                 if (runapp.Enabled == false)
                 {
                     runapp.List = applist;
-                    runapp.Time = cardTime;
+                    runapp.Time = int.Parse(timeTextBox.Text);
                     runapp.Run();
                     startToolStripMenuItem.Text = "停止";
                 }
@@ -157,6 +158,8 @@ namespace idleApp
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             runapp.Stop();
+            string content = JsonHelper.SerializeObject(config);
+            FileHelper.WriteFile("config.json", content);
         }
 
         private void clearTextbutton_Click(object sender, EventArgs e)
@@ -187,6 +190,37 @@ namespace idleApp
             }
         }
 
+        private void blackTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //8是退格
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char)8)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void blackAddButton_Click(object sender, EventArgs e)
+        {
+            if(blackTextBox.Text != "输入黑名单ID")
+            {
+                ListViewItem lvi = new ListViewItem();
+                lvi.Text = blackTextBox.Text;
+                backlistView.Items.Add(lvi);
+                config.Blacklist.Add(blackTextBox.Text);
+            }
+        }
+
+        private void blackDelButton_Click(object sender, EventArgs e)
+        {
+            if (backlistView.SelectedItems.Count > 0)
+            {
+                if (!defBlackList.Contains(backlistView.SelectedItems[0].Text))
+                {
+                    config.Blacklist.RemoveAt(backlistView.SelectedItems[0].Index);
+                    backlistView.Items.Remove(backlistView.SelectedItems[0]);
+                }
+            }
+        }
         #endregion
 
         #region 其他方法
@@ -224,14 +258,34 @@ namespace idleApp
         /// </summary>
         private void initializeConfig()
         {
-            regexIDtextBox.Text = regexID;
-            regCardtextBox.Text = regexCard;
-            timeTextBox.Text = (1200 / 60).ToString();
-
+            string stream = FileHelper.ReadFile("config.json");
+            if (!string.IsNullOrEmpty(stream) && stream != "Error")
+            {
+                config = JsonHelper.DeserializeJsonToObject<Config>(stream);
+            }
+            else
+            {
+                config = new Config();
+                config.RegexID = regexID;
+                config.RegexCard = regexCard;
+                config.CardTime = cardTime;
+                config.Blacklist = defBlackList;
+            }
+            initializeForm(config);
             HelpString help = new HelpString();
             helpRichTextBox.Text = help.ToString();
+        }
 
-            foreach (string value in defBackList)
+        /// <summary>
+        /// 初始化Form
+        /// </summary>
+        private void initializeForm(Config config)
+        {
+            blackTextBox.Text = "输入黑名单ID";
+            regexIDtextBox.Text = config.RegexID;
+            regCardtextBox.Text = config.RegexCard;
+            timeTextBox.Text = config.CardTime.ToString();
+            foreach (string value in config.Blacklist)
             {
                 ListViewItem lvi = new ListViewItem();
                 lvi.Text = value;
@@ -252,6 +306,7 @@ namespace idleApp
                 getidname = new GetIDName(html);
                 getidname.RegexID = regexIDtextBox.Text;
                 getidname.RegexCard = regCardtextBox.Text;
+                getidname.Badlist = config.Blacklist;
                 e.Result = getidname.Getid();// 这会传递给 RunWorkerCompleted
             }
             else
@@ -259,6 +314,7 @@ namespace idleApp
                 getidname = new GetIDName(scrtextBox.Text);
                 getidname.RegexID = regexIDtextBox.Text;
                 getidname.RegexCard = regCardtextBox.Text;
+                getidname.Badlist = config.Blacklist;
                 e.Result = getidname.Getid();
             }
         }

@@ -58,8 +58,8 @@ namespace idleApp
             appTimer = new Timer(tmp_time);
 #endif
 #if !DEBUG
-            //12min
-            int tmp_time = time * 1000;
+            //20min
+            int tmp_time = time * 60 * 1000;
 			appTimer = new Timer(tmp_time * card);
 #endif
             StartApp();

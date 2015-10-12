@@ -51,12 +51,13 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.helpRichTextBox = new System.Windows.Forms.RichTextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.timeTextBox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.backDelButton = new System.Windows.Forms.Button();
-            this.backAddButton = new System.Windows.Forms.Button();
+            this.blackDelButton = new System.Windows.Forms.Button();
+            this.blackAddButton = new System.Windows.Forms.Button();
             this.backlistView = new System.Windows.Forms.ListView();
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -66,7 +67,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.helpRichTextBox = new System.Windows.Forms.RichTextBox();
+            this.blackTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -279,6 +280,16 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "帮助";
             // 
+            // helpRichTextBox
+            // 
+            this.helpRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.helpRichTextBox.Location = new System.Drawing.Point(3, 17);
+            this.helpRichTextBox.Name = "helpRichTextBox";
+            this.helpRichTextBox.ReadOnly = true;
+            this.helpRichTextBox.Size = new System.Drawing.Size(149, 284);
+            this.helpRichTextBox.TabIndex = 0;
+            this.helpRichTextBox.Text = "";
+            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.timeTextBox);
@@ -310,8 +321,9 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.backDelButton);
-            this.groupBox2.Controls.Add(this.backAddButton);
+            this.groupBox2.Controls.Add(this.blackTextBox);
+            this.groupBox2.Controls.Add(this.blackDelButton);
+            this.groupBox2.Controls.Add(this.blackAddButton);
             this.groupBox2.Controls.Add(this.backlistView);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Left;
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
@@ -321,23 +333,25 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "黑名单";
             // 
-            // backDelButton
+            // blackDelButton
             // 
-            this.backDelButton.Location = new System.Drawing.Point(66, 275);
-            this.backDelButton.Name = "backDelButton";
-            this.backDelButton.Size = new System.Drawing.Size(60, 25);
-            this.backDelButton.TabIndex = 3;
-            this.backDelButton.Text = "Del";
-            this.backDelButton.UseVisualStyleBackColor = true;
+            this.blackDelButton.Location = new System.Drawing.Point(66, 275);
+            this.blackDelButton.Name = "blackDelButton";
+            this.blackDelButton.Size = new System.Drawing.Size(60, 25);
+            this.blackDelButton.TabIndex = 3;
+            this.blackDelButton.Text = "Del";
+            this.blackDelButton.UseVisualStyleBackColor = true;
+            this.blackDelButton.Click += new System.EventHandler(this.blackDelButton_Click);
             // 
-            // backAddButton
+            // blackAddButton
             // 
-            this.backAddButton.Location = new System.Drawing.Point(6, 275);
-            this.backAddButton.Name = "backAddButton";
-            this.backAddButton.Size = new System.Drawing.Size(60, 25);
-            this.backAddButton.TabIndex = 2;
-            this.backAddButton.Text = "Add";
-            this.backAddButton.UseVisualStyleBackColor = true;
+            this.blackAddButton.Location = new System.Drawing.Point(6, 275);
+            this.blackAddButton.Name = "blackAddButton";
+            this.blackAddButton.Size = new System.Drawing.Size(60, 25);
+            this.blackAddButton.TabIndex = 2;
+            this.blackAddButton.Text = "Add";
+            this.blackAddButton.UseVisualStyleBackColor = true;
+            this.blackAddButton.Click += new System.EventHandler(this.blackAddButton_Click);
             // 
             // backlistView
             // 
@@ -346,8 +360,9 @@
             this.backlistView.FullRowSelect = true;
             this.backlistView.GridLines = true;
             this.backlistView.Location = new System.Drawing.Point(6, 20);
+            this.backlistView.MultiSelect = false;
             this.backlistView.Name = "backlistView";
-            this.backlistView.Size = new System.Drawing.Size(120, 249);
+            this.backlistView.Size = new System.Drawing.Size(120, 226);
             this.backlistView.TabIndex = 1;
             this.backlistView.UseCompatibleStateImageBehavior = false;
             this.backlistView.View = System.Windows.Forms.View.Details;
@@ -411,15 +426,13 @@
             this.tabPage3.Text = "控制台";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // helpRichTextBox
+            // blackTextBox
             // 
-            this.helpRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.helpRichTextBox.Location = new System.Drawing.Point(3, 17);
-            this.helpRichTextBox.Name = "helpRichTextBox";
-            this.helpRichTextBox.ReadOnly = true;
-            this.helpRichTextBox.Size = new System.Drawing.Size(149, 284);
-            this.helpRichTextBox.TabIndex = 0;
-            this.helpRichTextBox.Text = "";
+            this.blackTextBox.Location = new System.Drawing.Point(6, 252);
+            this.blackTextBox.Name = "blackTextBox";
+            this.blackTextBox.Size = new System.Drawing.Size(120, 21);
+            this.blackTextBox.TabIndex = 4;
+            this.blackTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.blackTextBox_KeyPress);
             // 
             // MainForm
             // 
@@ -447,6 +460,7 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -480,10 +494,10 @@
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Button backAddButton;
+        private System.Windows.Forms.Button blackAddButton;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.Button backDelButton;
+        private System.Windows.Forms.Button blackDelButton;
         private System.Windows.Forms.TextBox regCardtextBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox regexIDtextBox;
@@ -493,6 +507,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.RichTextBox helpRichTextBox;
+        private System.Windows.Forms.TextBox blackTextBox;
     }
 }
 
