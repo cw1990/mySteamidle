@@ -118,8 +118,6 @@ namespace idleApp
 
         private void StartApp()
         {
-            //if(InIdle)
-            //{
             gameApp = new System.Diagnostics.Process();
             gameApp.StartInfo.UseShellExecute = true;
             gameApp.StartInfo.CreateNoWindow = true;
@@ -131,7 +129,6 @@ namespace idleApp
 
             setLog(gameApp.StartTime.ToString(), "Start", mArguments);
             Enabled = true;
-            //}
         }
         private void StopApp()
         {

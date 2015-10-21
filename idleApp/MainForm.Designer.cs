@@ -56,6 +56,7 @@
             this.timeTextBox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.blackTextBox = new System.Windows.Forms.TextBox();
             this.blackDelButton = new System.Windows.Forms.Button();
             this.blackAddButton = new System.Windows.Forms.Button();
             this.backlistView = new System.Windows.Forms.ListView();
@@ -66,8 +67,12 @@
             this.regexIDtextBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.label6 = new System.Windows.Forms.Label();
+            this.CmdtextBox = new System.Windows.Forms.TextBox();
+            this.CmdrichTextBox = new System.Windows.Forms.RichTextBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.blackTextBox = new System.Windows.Forms.TextBox();
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -77,6 +82,8 @@
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -131,6 +138,7 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(518, 336);
             this.tabControl1.TabIndex = 12;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // tabPage1
             // 
@@ -333,6 +341,14 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "黑名单";
             // 
+            // blackTextBox
+            // 
+            this.blackTextBox.Location = new System.Drawing.Point(6, 252);
+            this.blackTextBox.Name = "blackTextBox";
+            this.blackTextBox.Size = new System.Drawing.Size(120, 21);
+            this.blackTextBox.TabIndex = 4;
+            this.blackTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.blackTextBox_KeyPress);
+            // 
             // blackDelButton
             // 
             this.blackDelButton.Location = new System.Drawing.Point(66, 275);
@@ -419,20 +435,72 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.BackColor = System.Drawing.Color.Black;
+            this.tabPage3.Controls.Add(this.panel1);
+            this.tabPage3.Controls.Add(this.CmdrichTextBox);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(510, 310);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "控制台";
-            this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // blackTextBox
+            // panel1
             // 
-            this.blackTextBox.Location = new System.Drawing.Point(6, 252);
-            this.blackTextBox.Name = "blackTextBox";
-            this.blackTextBox.Size = new System.Drawing.Size(120, 21);
-            this.blackTextBox.TabIndex = 4;
-            this.blackTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.blackTextBox_KeyPress);
+            this.panel1.BackColor = System.Drawing.Color.Black;
+            this.panel1.Controls.Add(this.label6);
+            this.panel1.Controls.Add(this.CmdtextBox);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Location = new System.Drawing.Point(0, 285);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(510, 25);
+            this.panel1.TabIndex = 2;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Dock = System.Windows.Forms.DockStyle.Left;
+            this.label6.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label6.ForeColor = System.Drawing.Color.White;
+            this.label6.Location = new System.Drawing.Point(0, 0);
+            this.label6.Margin = new System.Windows.Forms.Padding(0);
+            this.label6.Name = "label6";
+            this.label6.Padding = new System.Windows.Forms.Padding(2, 0, 0, 0);
+            this.label6.Size = new System.Drawing.Size(18, 16);
+            this.label6.TabIndex = 2;
+            this.label6.Text = ">";
+            // 
+            // CmdtextBox
+            // 
+            this.CmdtextBox.BackColor = System.Drawing.Color.Black;
+            this.CmdtextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.CmdtextBox.Dock = System.Windows.Forms.DockStyle.Right;
+            this.CmdtextBox.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.CmdtextBox.ForeColor = System.Drawing.Color.White;
+            this.CmdtextBox.Location = new System.Drawing.Point(19, 0);
+            this.CmdtextBox.Name = "CmdtextBox";
+            this.CmdtextBox.Size = new System.Drawing.Size(491, 19);
+            this.CmdtextBox.TabIndex = 1;
+            this.CmdtextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CmdtextBox_KeyPress);
+            // 
+            // CmdrichTextBox
+            // 
+            this.CmdrichTextBox.BackColor = System.Drawing.Color.Black;
+            this.CmdrichTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.CmdrichTextBox.Dock = System.Windows.Forms.DockStyle.Top;
+            this.CmdrichTextBox.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.CmdrichTextBox.ForeColor = System.Drawing.Color.White;
+            this.CmdrichTextBox.Location = new System.Drawing.Point(0, 0);
+            this.CmdrichTextBox.Name = "CmdrichTextBox";
+            this.CmdrichTextBox.ReadOnly = true;
+            this.CmdrichTextBox.Size = new System.Drawing.Size(510, 279);
+            this.CmdrichTextBox.TabIndex = 0;
+            this.CmdrichTextBox.Text = "";
+            this.CmdrichTextBox.TextChanged += new System.EventHandler(this.CmdrichTextBox_TextChanged);
+            // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.Text = "notifyIcon1";
+            this.notifyIcon1.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
             // 
             // MainForm
             // 
@@ -449,6 +517,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -463,6 +532,9 @@
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -508,6 +580,11 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.RichTextBox helpRichTextBox;
         private System.Windows.Forms.TextBox blackTextBox;
+        private System.Windows.Forms.TextBox CmdtextBox;
+        private System.Windows.Forms.RichTextBox CmdrichTextBox;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.NotifyIcon notifyIcon1;
     }
 }
 

@@ -15,6 +15,7 @@ namespace idleApp
     {
         List<AppMember> applist;
         RunApp runapp;
+        CmdHelper chelp;
         //Client wbc;
 
         #region 常用参数
@@ -31,9 +32,12 @@ namespace idleApp
         {
             InitializeComponent();
             this.Text = "卡牌小工具4.1.3 情怀版 By zha7";
+            notifyIcon1.Text = "迷之卡牌程序";
+            notifyIcon1.Icon = this.Icon;
             //初始化
             initializeConfig();
 
+            chelp = new CmdHelper();
             runapp = new RunApp();
             runapp.mainThread += new RunApp.uiDelegate(LoadAppInfo);
 
@@ -61,6 +65,7 @@ namespace idleApp
         /// <param name="id"></param>
         private void LoadAppInfo(string time, string status, string id)
         {
+            string running = "";
             switch (status)
             {
                 case "Start":
@@ -73,6 +78,8 @@ namespace idleApp
                         if (applist[i].Id == id)
                         {
                             UpdateForm(game_label, applist[i].Name);
+                            running = applist[i].Name;
+                            CMDprint("开始运行" + running);
                             return;
                         }
 
@@ -81,6 +88,7 @@ namespace idleApp
                 case "Exit":
                     UpdateForm(timelabel, "Null");
                     UpdateForm(game_label, "");
+                    CMDprint(running + "结束运行");
                     break;
                 case "End":
                     UpdateForm(timelabel, "Null");
@@ -88,6 +96,7 @@ namespace idleApp
                     this.Invoke(new Action(delegate { LoadAppImage(status); }));
                     startToolStripMenuItem.Text = "开始";
                     applistView.Items.Clear();
+                    CMDprint("挂机结束");
                     break;
             }
         }
@@ -221,6 +230,39 @@ namespace idleApp
                 }
             }
         }
+
+        private void CmdrichTextBox_TextChanged(object sender, EventArgs e)
+        {
+            CmdrichTextBox.SelectionStart = CmdrichTextBox.Text.Length; //Set the current caret position at the end
+            CmdrichTextBox.ScrollToCaret(); //Now scroll it automatically
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl1.TabPages[tabControl1.SelectedIndex].Text == "控制台")
+            {
+                CmdtextBox.Focus();
+            }
+        }
+
+        private void MainForm_SizeChanged(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)  //判断是否最小化
+            {
+                this.ShowInTaskbar = false;  //不显示在系统任务栏
+                notifyIcon1.Visible = true;  //托盘图标可见
+            }
+        }
+
+        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                this.ShowInTaskbar = true;  //显示在系统任务栏
+                this.WindowState = FormWindowState.Normal;  //还原窗体
+                notifyIcon1.Visible = false;  //托盘图标隐藏
+            }
+        }
         #endregion
 
         #region 其他方法
@@ -262,9 +304,11 @@ namespace idleApp
             if (!string.IsNullOrEmpty(stream) && stream != "Error")
             {
                 config = JsonHelper.DeserializeJsonToObject<Config>(stream);
+                CMDprint("开始装载数据");
             }
             else
             {
+                CMDprintError("配置文件读取失败,启用默认配置");
                 config = new Config();
                 config.RegexID = regexID;
                 config.RegexCard = regexCard;
@@ -274,6 +318,7 @@ namespace idleApp
             initializeForm(config);
             HelpString help = new HelpString();
             helpRichTextBox.Text = help.ToString();
+            
         }
 
         /// <summary>
@@ -290,6 +335,34 @@ namespace idleApp
                 ListViewItem lvi = new ListViewItem();
                 lvi.Text = value;
                 backlistView.Items.Add(lvi);
+            }
+            CMDprint("数据装载完毕");
+        }
+
+        #endregion
+
+        #region CMD
+        public void CMDprint(string value)
+        {
+            CmdrichTextBox.AppendText(string.Format("[{0}]{1}\r\n",DateTime.Now.ToShortTimeString(),value));
+        }
+        public void CMDprintError(string value)
+        {
+            CmdrichTextBox.AppendText(string.Format("[{0}][Error]{1}\r\n", DateTime.Now.ToShortTimeString(), value));
+        }
+
+        private void CmdtextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //8是退格13回车38方向键上
+            if (e.KeyChar == (char)13)
+            {
+                e.Handled = true;
+                CMDprint(chelp.CheckKey(CmdtextBox.Text));
+                CmdtextBox.Clear();
+            }
+            else if(e.KeyChar==(char)38)
+            {
+
             }
         }
 

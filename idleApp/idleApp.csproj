@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class\AppMember.cs" />
+    <Compile Include="Class\CmdHelper.cs" />
     <Compile Include="Class\Config.cs" />
     <Compile Include="Class\FileHelper.cs" />
     <Compile Include="Class\GetIDName.cs" />
