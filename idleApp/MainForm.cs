@@ -6,7 +6,9 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
+using Update;
 //using WebSocketSharp;
 
 namespace idleApp
@@ -17,6 +19,10 @@ namespace idleApp
         RunApp runapp;
         CmdHelper chelp;
         //Client wbc;
+
+        #region 临时变量
+        string tmpcmd = "";
+        #endregion
 
         #region 常用参数
         string regexID = "(?<=\\brun/)\\w*\\b";
@@ -31,6 +37,7 @@ namespace idleApp
         public MainForm()
         {
             InitializeComponent();
+            checkUpdate();
             this.Text = "卡牌小工具4.1.3 情怀版 By zha7";
             notifyIcon1.Text = "迷之卡牌程序";
             notifyIcon1.Icon = this.Icon;
@@ -354,18 +361,24 @@ namespace idleApp
         private void CmdtextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             //8是退格13回车38方向键上
-            if (e.KeyChar == (char)13)
+            if (e.KeyChar == (char)13 && !string.IsNullOrEmpty(CmdtextBox.Text))
             {
                 e.Handled = true;
                 CMDprint(chelp.CheckKey(CmdtextBox.Text));
+                tmpcmd = CmdtextBox.Text;
                 CmdtextBox.Clear();
             }
-            else if(e.KeyChar==(char)38)
-            {
 
-            }
         }
 
+        private void CmdtextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Up)
+            {
+                if (!string.IsNullOrEmpty(tmpcmd))
+                    CmdtextBox.Text = tmpcmd;
+            }
+        }
         #endregion
 
         #region 处理源码
@@ -421,6 +434,33 @@ namespace idleApp
                 }
             }
         }
+        #endregion
+
+        #region 自动更新
+        public void checkUpdate()
+        {
+            SoftUpdate app = new SoftUpdate(Application.ExecutablePath, "zha7idle");
+            app.UpdateFinish += new UpdateState(app_UpdateFinish);
+            try
+            {
+                if (app.IsUpdate && MessageBox.Show("检查到新版本，是否更新？", "Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+
+                    Thread update = new Thread(new ThreadStart(app.Update));
+                    update.Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        void app_UpdateFinish()
+        {
+            MessageBox.Show("更新完成，请解压更新包,重新启动程序！", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         #endregion
     }
 }

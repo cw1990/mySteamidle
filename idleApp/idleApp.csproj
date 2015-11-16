@@ -118,6 +118,10 @@
       <Project>{4b1650cd-66ee-4071-bb5b-2755b1c614a0}</Project>
       <Name>App</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Update\Update.csproj">
+      <Project>{f7d263aa-a39e-4b3a-bb4b-6a5e4b31f5b8}</Project>
+      <Name>Update</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

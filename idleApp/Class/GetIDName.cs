@@ -95,7 +95,7 @@ namespace idleApp.Class
             for (int i = 0; i < mc_card.Count; i++)
             {
                 //剔除无效条目
-                if (Regex.IsMatch(mc_card[i].Groups[1].Value, "\\d") && !mc_card[i].Value.Contains("任务中"))
+                if (Regex.IsMatch(mc_card[i].Groups[1].Value, "\\d") && !mc_card[i].Value.Contains("任务"))
                 {
                     string str = mc_card[i].Groups[1].Value;
                     string regex = @"(\d+)";

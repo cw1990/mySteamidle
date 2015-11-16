@@ -22,7 +22,7 @@ namespace App
             }
             catch (Exception e)
             {
-                this.Text = args[0];
+                //this.Text = args[0];
             }
         }
     }

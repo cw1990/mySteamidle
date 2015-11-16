@@ -481,6 +481,7 @@
             this.CmdtextBox.Size = new System.Drawing.Size(491, 19);
             this.CmdtextBox.TabIndex = 1;
             this.CmdtextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CmdtextBox_KeyPress);
+            this.CmdtextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CmdtextBox_KeyUp);
             // 
             // CmdrichTextBox
             // 
