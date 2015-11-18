@@ -38,7 +38,11 @@ namespace idleApp
         {
             InitializeComponent();
             checkUpdate();
+#if DEBUG
+            this.Text = "[Debug]卡牌小工具4.1.3 情怀版 By zha7";
+#else
             this.Text = "卡牌小工具4.1.3 情怀版 By zha7";
+#endif
             notifyIcon1.Text = "迷之卡牌程序";
             notifyIcon1.Icon = this.Icon;
             //初始化
@@ -63,7 +67,7 @@ namespace idleApp
 #endif
         }
 
-        #region 更新Form
+#region 更新Form
         /// <summary>
         /// 获取挂机消息
         /// </summary>
@@ -102,7 +106,8 @@ namespace idleApp
                     UpdateForm(game_label, "");
                     this.Invoke(new Action(delegate { LoadAppImage(status); }));
                     startToolStripMenuItem.Text = "开始";
-                    applistView.Items.Clear();
+                    runapp.Stop();
+                    this.Invoke(new Action(delegate { applistView.Items.Clear(); }));
                     CMDprint("挂机结束");
                     break;
             }
@@ -143,9 +148,15 @@ namespace idleApp
             }
 
         }
-        #endregion
 
-        #region 事件
+        private void UpdateLog(string value)
+        {
+            CmdrichTextBox.AppendText(value);
+        }
+
+#endregion
+
+#region 事件
 
         private void getIDToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -185,7 +196,7 @@ namespace idleApp
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("http://zha7.bifidy.net");
+            System.Diagnostics.Process.Start("http://zha7.net");
         }
 
         private void dELToolStripMenuItem_Click(object sender, EventArgs e)
@@ -270,9 +281,9 @@ namespace idleApp
                 notifyIcon1.Visible = false;  //托盘图标隐藏
             }
         }
-        #endregion
+#endregion
 
-        #region 其他方法
+#region 其他方法
 
         public int getRandomNum()
         {
@@ -346,16 +357,32 @@ namespace idleApp
             CMDprint("数据装载完毕");
         }
 
-        #endregion
+#endregion
 
-        #region CMD
+#region CMD
         public void CMDprint(string value)
         {
-            CmdrichTextBox.AppendText(string.Format("[{0}]{1}\r\n",DateTime.Now.ToShortTimeString(),value));
+            string log = string.Format("[{0}]{1}\r\n", DateTime.Now.ToShortTimeString(), value);
+            try
+            {
+                UpdateLog(log);
+            }
+            catch (Exception e)
+            {
+                this.Invoke(new Action(delegate { UpdateLog(log); }));
+            }
         }
         public void CMDprintError(string value)
         {
-            CmdrichTextBox.AppendText(string.Format("[{0}][Error]{1}\r\n", DateTime.Now.ToShortTimeString(), value));
+            string log = string.Format("[{0}][Error]{1}\r\n", DateTime.Now.ToShortTimeString(), value);
+            try
+            {
+                UpdateLog(log);
+            }
+            catch (Exception e)
+            {
+                this.Invoke(new Action(delegate { UpdateLog(log); }));
+            }
         }
 
         private void CmdtextBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -379,21 +406,15 @@ namespace idleApp
                     CmdtextBox.Text = tmpcmd;
             }
         }
-        #endregion
+#endregion
 
-        #region 处理源码
+#region 处理源码
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {
             GetIDName getidname;          
             if (scrtextBox.Text.Length == 0)
             {
-                string html = "";
-                this.Invoke(new Action(delegate { html = getClipboard(); }));
-                getidname = new GetIDName(html);
-                getidname.RegexID = regexIDtextBox.Text;
-                getidname.RegexCard = regCardtextBox.Text;
-                getidname.Badlist = config.Blacklist;
-                e.Result = getidname.Getid();// 这会传递给 RunWorkerCompleted
+                MessageBox.Show("请复制徽章页面的源代码!", "错误");
             }
             else
             {
@@ -434,9 +455,9 @@ namespace idleApp
                 }
             }
         }
-        #endregion
+#endregion
 
-        #region 自动更新
+#region 自动更新
         public void checkUpdate()
         {
             SoftUpdate app = new SoftUpdate(Application.ExecutablePath, "zha7idle");
@@ -461,6 +482,6 @@ namespace idleApp
             MessageBox.Show("更新完成，请解压更新包,重新启动程序！", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        #endregion
+#endregion
     }
 }

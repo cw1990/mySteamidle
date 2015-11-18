@@ -53,7 +53,7 @@ namespace idleApp
         {
             int card = Convert.ToInt32(list[0].CardNum);
 #if DEBUG
-            //20s
+            //10s
             int tmp_time = 10 * 1000;
             appTimer = new Timer(tmp_time);
 #endif
