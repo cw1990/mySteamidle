@@ -12,14 +12,20 @@ namespace Update
     /// 更新完成触发的事件
     /// </summary>
     public delegate void UpdateState();
+
+    /// <summary>
+    /// 更新进度变化触发的事件
+    /// </summary>
+    public delegate void UpdateProgress(int ProgressValue, string text);
+
     /// <summary>
     /// 程序更新
     /// </summary>
     public class SoftUpdate
     {
-
+        WebClient wc;
         private string download;
-        private const string updateUrl = "http://zha7.net/update.xml";//升级配置的XML文件地址
+        private string updateUrl;
 
         #region 构造函数
         public SoftUpdate() { }
@@ -28,10 +34,11 @@ namespace Update
         /// 程序更新
         /// </summary>
         /// <param name="file">要更新的文件</param>
-        public SoftUpdate(string file, string softName)
+        public SoftUpdate(string url, string file, string softName)
         {
             this.LoadFile = file;
             this.SoftName = softName;
+            this.updateUrl = url;
         }
         #endregion
 
@@ -79,6 +86,17 @@ namespace Update
             set { softName = value; }
         }
 
+        /// <summary>
+        /// 升级配置的XML文件地址
+        /// </summary>
+        public string UpdateUrl
+        {
+            get
+            {
+                return updateUrl;
+            }
+        }
+
         #endregion
 
         /// <summary>
@@ -92,6 +110,15 @@ namespace Update
         }
 
         /// <summary>
+        /// 更新进度变化触发的事件
+        /// </summary>
+        public event UpdateProgress UpdateProgressChage;
+        private void isChage(int ProgressValue, string text)
+        {
+            UpdateProgressChage(ProgressValue, text);
+        }
+
+        /// <summary>
         /// 下载更新
         /// </summary>
         public void Update()
@@ -100,21 +127,42 @@ namespace Update
             {
                 if (!isUpdate)
                     return;
-                WebClient wc = new WebClient();
+
+                wc = new WebClient();
+                //是否存在正在进行中的Web请求
+                if (wc.IsBusy)
+                {
+                    wc.CancelAsync();
+                }
+                //绑定事件
+                wc.DownloadProgressChanged += Wc_DownloadProgressChanged;
+                wc.DownloadFileCompleted += Wc_DownloadFileCompleted;
+
                 string filename = "";
                 string exten = download.Substring(download.LastIndexOf("."));
                 if (loadFile.IndexOf(@"/") == -1)
                     filename = "Update_" + Path.GetFileNameWithoutExtension(loadFile) + exten;
                 else
                     filename = Path.GetDirectoryName(loadFile) + "//Update_" + Path.GetFileNameWithoutExtension(loadFile) + exten;
-                wc.DownloadFile(download, filename);
-                wc.Dispose();
-                isFinish();
+
+                wc.DownloadFileAsync(new Uri(download), filename);
             }
             catch
             {
                 throw new Exception("更新出现错误，网络连接失败！");
             }
+        }
+
+        private void Wc_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            wc.Dispose();
+            isFinish();
+        }
+
+        private void Wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            string Text = string.Format("{0}/{1}(字节)", e.BytesReceived, e.TotalBytesToReceive);
+            isChage(e.ProgressPercentage, Text);
         }
 
         /// <summary>

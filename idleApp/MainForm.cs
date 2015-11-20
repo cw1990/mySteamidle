@@ -15,9 +15,12 @@ namespace idleApp
 {
     public partial class MainForm : Form
     {
+        UpdateForm upform;
         List<AppMember> applist;
         RunApp runapp;
         CmdHelper chelp;
+        BackgroundWorker _bw;
+        Config config = new Config();
         //Client wbc;
 
         #region 临时变量
@@ -25,49 +28,30 @@ namespace idleApp
         #endregion
 
         #region 常用参数
+        string updateUrl = "http://zha7.net/update.xml";//升级配置的XML文件地址
         string regexID = "(?<=\\brun/)\\w*\\b";
         string regexCard = "<span class=\"progress_info_bold\">([^<]*)</span>";
         int cardTime = 20;//分钟
         List<string> defBlackList = new List<string> { "303700", "368020", "335590", "267420" };
-        Config config = new Config();
         #endregion
-
-        BackgroundWorker _bw;
 
         public MainForm()
         {
             InitializeComponent();
-            checkUpdate();
-#if DEBUG
-            this.Text = "[Debug]卡牌小工具4.1.3 情怀版 By zha7";
-#else
-            this.Text = "卡牌小工具4.1.3 情怀版 By zha7";
-#endif
-            notifyIcon1.Text = "迷之卡牌程序";
-            notifyIcon1.Icon = this.Icon;
-            //初始化
+
+            //初始化参数
             initializeConfig();
-
-            chelp = new CmdHelper();
-            runapp = new RunApp();
-            runapp.mainThread += new RunApp.uiDelegate(LoadAppInfo);
-
-            applist = new List<AppMember>();
-
-            //int Snum = getRandomNum();
-            //Snumlabel.Text = "SNum:" + Snum.ToString();
-            //wbc = new Client(Snum);
-
-            _bw = new BackgroundWorker();
-            _bw.DoWork += bw_DoWork;
-            _bw.RunWorkerCompleted += bw_RunWorkerCompleted;
+            //启动自动更新
+            checkUpdate();
+            //初始化Form
+            initializeForm(config);
 
 #if !DEBUG
             MessageBox.Show("你的徽章页面有可能是大余1页的，请选择有卡挂的页面复制源码", "游戏很多的大佬请注意");
 #endif
         }
 
-#region 更新Form
+        #region 更新Form
         /// <summary>
         /// 获取挂机消息
         /// </summary>
@@ -82,13 +66,13 @@ namespace idleApp
                 case "Start":
 
                     this.Invoke(new Action(delegate { LoadAppImage(id); }));
-                    UpdateForm(timelabel, time);
+                    UpdateToForm(timelabel, time);
 
                     for (int i = 0; i < applist.Count; i++)
                     {
                         if (applist[i].Id == id)
                         {
-                            UpdateForm(game_label, applist[i].Name);
+                            UpdateToForm(game_label, applist[i].Name);
                             running = applist[i].Name;
                             CMDprint("开始运行" + running);
                             return;
@@ -97,13 +81,13 @@ namespace idleApp
                     }
                     break;
                 case "Exit":
-                    UpdateForm(timelabel, "Null");
-                    UpdateForm(game_label, "");
+                    UpdateToForm(timelabel, "Null");
+                    UpdateToForm(game_label, "");
                     CMDprint(running + "结束运行");
                     break;
                 case "End":
-                    UpdateForm(timelabel, "Null");
-                    UpdateForm(game_label, "");
+                    UpdateToForm(timelabel, "Null");
+                    UpdateToForm(game_label, "");
                     this.Invoke(new Action(delegate { LoadAppImage(status); }));
                     startToolStripMenuItem.Text = "开始";
                     runapp.Stop();
@@ -118,7 +102,7 @@ namespace idleApp
         /// </summary>
         /// <param name="label">label name</param>
         /// <param name="param">value</param>
-        private void UpdateForm(Label label, string param)
+        private void UpdateToForm(Label label, string param)
         {
             this.Invoke(new Action(delegate { label.Text = param; }));
         }
@@ -154,9 +138,9 @@ namespace idleApp
             CmdrichTextBox.AppendText(value);
         }
 
-#endregion
+        #endregion
 
-#region 事件
+        #region 事件
 
         private void getIDToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -201,7 +185,7 @@ namespace idleApp
 
         private void dELToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(applistView.SelectedItems.Count >0)
+            if (applistView.SelectedItems.Count > 0)
             {
                 applist.RemoveAt(applistView.SelectedItems[0].Index);
                 applistView.Items.Remove(applistView.SelectedItems[0]);
@@ -228,7 +212,7 @@ namespace idleApp
 
         private void blackAddButton_Click(object sender, EventArgs e)
         {
-            if(blackTextBox.Text != "输入黑名单ID")
+            if (blackTextBox.Text != "输入黑名单ID")
             {
                 ListViewItem lvi = new ListViewItem();
                 lvi.Text = blackTextBox.Text;
@@ -281,9 +265,9 @@ namespace idleApp
                 notifyIcon1.Visible = false;  //托盘图标隐藏
             }
         }
-#endregion
+        #endregion
 
-#region 其他方法
+        #region 其他方法
 
         public int getRandomNum()
         {
@@ -332,11 +316,8 @@ namespace idleApp
                 config.RegexCard = regexCard;
                 config.CardTime = cardTime;
                 config.Blacklist = defBlackList;
+                config.UpdateUrl = updateUrl;
             }
-            initializeForm(config);
-            HelpString help = new HelpString();
-            helpRichTextBox.Text = help.ToString();
-            
         }
 
         /// <summary>
@@ -344,6 +325,18 @@ namespace idleApp
         /// </summary>
         private void initializeForm(Config config)
         {
+#if DEBUG
+            this.Text = "[Debug]卡牌小工具4.1.3 情怀版 By zha7";
+#else
+            this.Text = "卡牌小工具4.1.3 情怀版 By zha7";
+#endif
+            notifyIcon1.Text = "迷之卡牌程序";
+            notifyIcon1.Icon = this.Icon;
+
+            //数据装载
+            HelpString help = new HelpString();
+            helpRichTextBox.Text = help.ToString();
+
             blackTextBox.Text = "输入黑名单ID";
             regexIDtextBox.Text = config.RegexID;
             regCardtextBox.Text = config.RegexCard;
@@ -355,11 +348,25 @@ namespace idleApp
                 backlistView.Items.Add(lvi);
             }
             CMDprint("数据装载完毕");
+
+            chelp = new CmdHelper();
+            runapp = new RunApp();
+            runapp.mainThread += new RunApp.uiDelegate(LoadAppInfo);
+
+            applist = new List<AppMember>();
+
+            //int Snum = getRandomNum();
+            //Snumlabel.Text = "SNum:" + Snum.ToString();
+            //wbc = new Client(Snum);
+
+            _bw = new BackgroundWorker();
+            _bw.DoWork += bw_DoWork;
+            _bw.RunWorkerCompleted += bw_RunWorkerCompleted;
         }
 
-#endregion
+        #endregion
 
-#region CMD
+        #region CMD
         public void CMDprint(string value)
         {
             string log = string.Format("[{0}]{1}\r\n", DateTime.Now.ToShortTimeString(), value);
@@ -406,12 +413,12 @@ namespace idleApp
                     CmdtextBox.Text = tmpcmd;
             }
         }
-#endregion
+        #endregion
 
-#region 处理源码
+        #region 处理源码
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            GetIDName getidname;          
+            GetIDName getidname;
             if (scrtextBox.Text.Length == 0)
             {
                 MessageBox.Show("请复制徽章页面的源代码!", "错误");
@@ -426,7 +433,7 @@ namespace idleApp
             }
         }
 
-        private void bw_RunWorkerCompleted(object sender,RunWorkerCompletedEventArgs e)
+        private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Cancelled)
                 Console.WriteLine("You canceled!");
@@ -455,33 +462,17 @@ namespace idleApp
                 }
             }
         }
-#endregion
+        #endregion
 
-#region 自动更新
+        #region 自动更新
         public void checkUpdate()
         {
-            SoftUpdate app = new SoftUpdate(Application.ExecutablePath, "zha7idle");
-            app.UpdateFinish += new UpdateState(app_UpdateFinish);
-            try
-            {
-                if (app.IsUpdate && MessageBox.Show("检查到新版本，是否更新？", "Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-
-                    Thread update = new Thread(new ThreadStart(app.Update));
-                    update.Start();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            if (string.IsNullOrEmpty(config.UpdateUrl))
+                config.UpdateUrl = updateUrl;
+            upform = new UpdateForm(config.UpdateUrl);
+            upform.ShowDialog();
         }
 
-        void app_UpdateFinish()
-        {
-            MessageBox.Show("更新完成，请解压更新包,重新启动程序！", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-#endregion
+        #endregion
     }
 }
