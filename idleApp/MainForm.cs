@@ -469,8 +469,22 @@ namespace idleApp
         {
             if (string.IsNullOrEmpty(config.UpdateUrl))
                 config.UpdateUrl = updateUrl;
-            upform = new UpdateForm(config.UpdateUrl);
-            upform.ShowDialog();
+
+            SoftUpdate app = new SoftUpdate(config.UpdateUrl, Application.ExecutablePath, "zha7idle");
+            try
+            {               
+                if (app.IsUpdate && MessageBox.Show(string.Format("检查到新版本{0}，是否更新？\r\n更新说明:\r\n{1}", app.NewVerson, app.UpdateHelp), "Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    upform = new UpdateForm(app);
+                    upform.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+
         }
 
         #endregion

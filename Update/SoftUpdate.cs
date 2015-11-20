@@ -25,7 +25,6 @@ namespace Update
     {
         WebClient wc;
         private string download;
-        private string updateUrl;
 
         #region 构造函数
         public SoftUpdate() { }
@@ -47,6 +46,8 @@ namespace Update
         private string newVerson;
         private string softName;
         private bool isUpdate;
+        private string updateUrl;
+        private string updatehelp;
 
         /// <summary>
         /// 或取是否需要更新
@@ -94,6 +95,17 @@ namespace Update
             get
             {
                 return updateUrl;
+            }
+        }
+
+        /// <summary>
+        /// 更新说明
+        /// </summary>
+        public string UpdateHelp
+        {
+            get
+            {
+                return updatehelp;
             }
         }
 
@@ -185,8 +197,10 @@ namespace Update
                         {
                             if (xml.Name == "Verson")
                                 newVerson = xml.InnerText;
-                            else
+                            else if (xml.Name == "DownLoad")
                                 download = xml.InnerText;
+                            else
+                                updatehelp = xml.InnerText;
                         }
                     }
                 }

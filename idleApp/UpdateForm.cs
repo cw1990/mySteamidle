@@ -17,17 +17,17 @@ namespace idleApp
         /// 构造函数
         /// </summary>
         /// <param name="url">升级Url</param>
-        public UpdateForm(string url)
+        public UpdateForm(SoftUpdate app)
         {
             InitializeComponent();
             this.Text = "更新中";
 
-            SoftUpdate app = new SoftUpdate(url, Application.ExecutablePath, "zha7idle");
+            //app = new SoftUpdate(url, Application.ExecutablePath, "zha7idle");
             app.UpdateFinish += new UpdateState(app_UpdateFinish);
             app.UpdateProgressChage += App_UpdateProgressChage;
             try
             {
-                if (app.IsUpdate && MessageBox.Show("检查到新版本，是否更新？", "Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (app.IsUpdate)
                 {
                     Thread update = new Thread(new ThreadStart(app.Update));
                     update.Start();
