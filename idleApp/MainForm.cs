@@ -155,8 +155,16 @@ namespace idleApp
                 {
                     runapp.List = applist;
                     runapp.Time = int.Parse(timeTextBox.Text);
-                    runapp.Run();
-                    startToolStripMenuItem.Text = "停止";
+                    try
+                    {
+                        runapp.Run();
+                        startToolStripMenuItem.Text = "停止";
+                    }
+                    catch(Exception ex)
+                    {
+                        CMDprintError(ex.Message);
+                        MessageBox.Show(ex.Message);
+                    }
                 }
                 else
                 {
