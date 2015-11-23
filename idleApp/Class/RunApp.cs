@@ -109,7 +109,7 @@ namespace idleApp
                     setLog(DateTime.Now.ToString(), "End", mArguments);
                 }
             }
-            catch (Exception e_indexout)
+            catch (Exception ex)
             {
                 StopApp();
                 setLog(DateTime.Now.ToString(), "End", mArguments);
@@ -125,7 +125,17 @@ namespace idleApp
             gameApp.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             mArguments = list[0].Id;
             gameApp.StartInfo.Arguments = mArguments;
-            gameApp.Start();
+
+            try
+            {
+                gameApp.Start();
+            }
+            catch
+            {
+                throw new Exception("挂机程序启动被阻止,请检查是否被安全软件阻拦");
+                Stop();
+            }
+
 
             setLog(gameApp.StartTime.ToString(), "Start", mArguments);
             Enabled = true;
@@ -134,9 +144,16 @@ namespace idleApp
         {
             if (InIdle)
             {
-                gameApp.Kill();
-                setLog(DateTime.Now.ToString(), "Exit", mArguments);
-                Enabled = false;
+                try
+                {
+                    gameApp.Kill();
+                    setLog(DateTime.Now.ToString(), "Exit", mArguments);
+                    Enabled = false;
+                }
+                catch
+                {
+                    Enabled = false;
+                }
             }
         }
 
