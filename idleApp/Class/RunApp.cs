@@ -13,7 +13,6 @@ namespace idleApp
         Timer appTimer;
         List<AppMember> list;
         public bool Enabled = false;
-        int mIndex = 0;
         int time;
 
         #region 属性
@@ -99,7 +98,6 @@ namespace idleApp
             {
                 list.RemoveAt(0);
                 StopApp();
-                System.Diagnostics.Debug.WriteLine(mIndex);
                 if (list.Count != 0)
                 {
                     StartApp();
@@ -147,6 +145,7 @@ namespace idleApp
                 try
                 {
                     gameApp.Kill();
+                    gameApp.Close();
                     setLog(DateTime.Now.ToString(), "Exit", mArguments);
                     Enabled = false;
                 }
