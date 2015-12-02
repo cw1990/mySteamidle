@@ -195,12 +195,18 @@ namespace Update
                     {
                         foreach (XmlNode xml in node)
                         {
-                            if (xml.Name == "Verson")
-                                newVerson = xml.InnerText;
-                            else if (xml.Name == "DownLoad")
-                                download = xml.InnerText;
-                            else
-                                updatehelp = xml.InnerText;
+                            switch(xml.Name)
+                            {
+                                case "Verson":
+                                    newVerson = xml.InnerText;
+                                    break;
+                                case "DownLoad":
+                                    download = xml.InnerText;
+                                    break;
+                                case "Help":
+                                    updatehelp = xml.InnerText;
+                                    break;
+                            }
                         }
                     }
                 }
