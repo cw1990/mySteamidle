@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -17,12 +14,18 @@ namespace App
             try
             {
                 idLabel.Text = args[0];
-                nameLabel.Text = args[1];
-                this.Text = args[1];
+                byte[] bytes = Convert.FromBase64String(args[1]);
+                string name = Encoding.Default.GetString(bytes);
+                nameLabel.Text = name;
+                this.Text = name;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                //this.Text = args[0];
+                try
+                {
+                    this.Text = args[0];
+                }
+                catch { this.Text = "Debug"; };
             }
         }
     }
