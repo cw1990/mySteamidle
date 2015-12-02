@@ -49,6 +49,7 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.helpRichTextBox = new System.Windows.Forms.RichTextBox();
@@ -61,11 +62,6 @@
             this.blackAddButton = new System.Windows.Forms.Button();
             this.backlistView = new System.Windows.Forms.ListView();
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.regCardtextBox = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.regexIDtextBox = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.Label();
@@ -73,6 +69,8 @@
             this.CmdrichTextBox = new System.Windows.Forms.RichTextBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.twohourToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearAppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -81,7 +79,6 @@
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -92,7 +89,9 @@
             this.startToolStripMenuItem,
             this.getIDToolStripMenuItem,
             this.dELToolStripMenuItem,
-            this.aboutToolStripMenuItem});
+            this.aboutToolStripMenuItem,
+            this.twohourToolStripMenuItem,
+            this.clearAppToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(518, 25);
@@ -176,6 +175,7 @@
             this.clearTextbutton.TabIndex = 19;
             this.clearTextbutton.Text = "清除上方源码";
             this.clearTextbutton.UseVisualStyleBackColor = true;
+            this.clearTextbutton.Click += new System.EventHandler(this.clearTextbutton_Click);
             // 
             // label2
             // 
@@ -238,7 +238,8 @@
             this.applistView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
-            this.columnHeader3});
+            this.columnHeader3,
+            this.columnHeader5});
             this.applistView.Dock = System.Windows.Forms.DockStyle.Left;
             this.applistView.FullRowSelect = true;
             this.applistView.GridLines = true;
@@ -262,14 +263,17 @@
             // columnHeader3
             // 
             this.columnHeader3.Text = "Card";
-            this.columnHeader3.Width = 100;
+            this.columnHeader3.Width = 46;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "Horus";
             // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Controls.Add(this.groupBox3);
             this.tabPage2.Controls.Add(this.groupBox2);
-            this.tabPage2.Controls.Add(this.groupBox1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -302,9 +306,9 @@
             // 
             this.groupBox3.Controls.Add(this.timeTextBox);
             this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Location = new System.Drawing.Point(141, 119);
+            this.groupBox3.Location = new System.Drawing.Point(141, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(200, 188);
+            this.groupBox3.Size = new System.Drawing.Size(200, 304);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "设置";
@@ -316,6 +320,7 @@
             this.timeTextBox.Name = "timeTextBox";
             this.timeTextBox.Size = new System.Drawing.Size(60, 21);
             this.timeTextBox.TabIndex = 1;
+            this.timeTextBox.TextChanged += new System.EventHandler(this.timeTextBox_TextChanged);
             this.timeTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.timeTextBox_KeyPress);
             // 
             // label5
@@ -388,51 +393,6 @@
             this.columnHeader4.Text = "ID";
             this.columnHeader4.Width = 110;
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.regCardtextBox);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.regexIDtextBox);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Location = new System.Drawing.Point(141, 3);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 110);
-            this.groupBox1.TabIndex = 2;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "正则表达式";
-            // 
-            // regCardtextBox
-            // 
-            this.regCardtextBox.Location = new System.Drawing.Point(6, 80);
-            this.regCardtextBox.Name = "regCardtextBox";
-            this.regCardtextBox.Size = new System.Drawing.Size(188, 21);
-            this.regCardtextBox.TabIndex = 3;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 64);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(89, 12);
-            this.label4.TabIndex = 2;
-            this.label4.Text = "获取Card数量用";
-            // 
-            // regexIDtextBox
-            // 
-            this.regexIDtextBox.Location = new System.Drawing.Point(6, 36);
-            this.regexIDtextBox.Name = "regexIDtextBox";
-            this.regexIDtextBox.Size = new System.Drawing.Size(188, 21);
-            this.regexIDtextBox.TabIndex = 1;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 20);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(53, 12);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "获取ID用";
-            // 
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.Black;
@@ -503,6 +463,20 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
             // 
+            // twohourToolStripMenuItem
+            // 
+            this.twohourToolStripMenuItem.Name = "twohourToolStripMenuItem";
+            this.twohourToolStripMenuItem.Size = new System.Drawing.Size(87, 21);
+            this.twohourToolStripMenuItem.Text = "一键挂2小时";
+            this.twohourToolStripMenuItem.Click += new System.EventHandler(this.twohourToolStripMenuItem_Click);
+            // 
+            // clearAppToolStripMenuItem
+            // 
+            this.clearAppToolStripMenuItem.Name = "clearAppToolStripMenuItem";
+            this.clearAppToolStripMenuItem.Size = new System.Drawing.Size(92, 21);
+            this.clearAppToolStripMenuItem.Text = "一键关闭游戏";
+            this.clearAppToolStripMenuItem.Click += new System.EventHandler(this.clearAppToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -518,7 +492,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -531,8 +505,6 @@
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -568,13 +540,8 @@
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button blackAddButton;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Button blackDelButton;
-        private System.Windows.Forms.TextBox regCardtextBox;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox regexIDtextBox;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TextBox timeTextBox;
         private System.Windows.Forms.Label label5;
@@ -586,6 +553,9 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ToolStripMenuItem twohourToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearAppToolStripMenuItem;
     }
 }
 

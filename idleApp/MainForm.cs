@@ -1,36 +1,43 @@
 ﻿using idleApp.Class;
+using idleApp.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
+using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
+using System.Management;
+using System.Security.Principal;
+using System.Timers;
 using System.Windows.Forms;
 using Update;
-//using WebSocketSharp;
 
 namespace idleApp
 {
-    public partial class MainForm : Form
+    enum Status
+    {
+        Start = 0,
+        Exit = 1,
+        End = 2
+    }
+    public partial class  MainForm : Form
     {
         UpdateForm upform;
         List<AppMember> applist;
-        RunApp runapp;
+        //RunApp runapp;
         CmdHelper chelp;
         BackgroundWorker _bw;
         Config config = new Config();
         //Client wbc;
+        System.Timers.Timer appTimer;
+        SingleRun sr;
 
         #region 临时变量
         string tmpcmd = "";
+        int AppIndex = 0;
         #endregion
 
-        #region 常用参数
+        #region 默认参数
         string updateUrl = "http://zha7.net/update.xml";//升级配置的XML文件地址
-        string regexID = "(?<=\\brun/)\\w*\\b";
-        string regexCard = "<span class=\"progress_info_bold\">([^<]*)</span>";
         int cardTime = 20;//分钟
         List<string> defBlackList = new List<string> { "303700", "368020", "335590", "267420" };
         #endregion
@@ -58,53 +65,50 @@ namespace idleApp
         /// <param name="time"></param>
         /// <param name="status"></param>
         /// <param name="id"></param>
-        private void LoadAppInfo(string time, string status, string id)
+        private void LoadAppMsg(int status, string id)
         {
+            string time = DateTime.Now.ToLongTimeString();
             string running = "";
             switch (status)
             {
-                case "Start":
-
-                    this.Invoke(new Action(delegate { LoadAppImage(id); }));
-                    UpdateToForm(timelabel, time);
-
-                    for (int i = 0; i < applist.Count; i++)
+                case (int)Status.Start:
+                    this.Invoke(new Action(delegate
                     {
-                        if (applist[i].Id == id)
+                        LoadAppImage(id);
+                        timelabel.Text = time;
+                        for (int i = 0; i < applist.Count; i++)
                         {
-                            UpdateToForm(game_label, applist[i].Name);
-                            running = applist[i].Name;
-                            CMDprint("开始运行" + running);
-                            return;
+                            if (applist[i].Id == id)
+                            {
+                                game_label.Text = applist[i].Name;
+                                running = applist[i].Name;
+                            }
                         }
-
-                    }
+                    }));
+                    CMDprint("开始运行" + running);
+                    return;
                     break;
-                case "Exit":
-                    UpdateToForm(timelabel, "Null");
-                    UpdateToForm(game_label, "");
+                case (int)Status.End:
+                    this.Invoke(new Action(delegate
+                    {
+                        timelabel.Text = "Null";
+                        game_label.Text = "";
+                    }));
                     CMDprint(running + "结束运行");
                     break;
-                case "End":
-                    UpdateToForm(timelabel, "Null");
-                    UpdateToForm(game_label, "");
-                    this.Invoke(new Action(delegate { LoadAppImage(status); }));
+                case (int)Status.Exit:
+                    this.Invoke(new Action(delegate
+                    {
+                        timelabel.Text = "Null";
+                        game_label.Text = "";
+                        LoadAppImage("End");
+                        applistView.Items.Clear();
+                    }));
                     startToolStripMenuItem.Text = "开始";
-                    runapp.Stop();
-                    this.Invoke(new Action(delegate { applistView.Items.Clear(); }));
                     CMDprint("挂机结束");
+                    applist.Clear();
                     break;
             }
-        }
-
-        /// <summary>
-        /// 更新label
-        /// </summary>
-        /// <param name="label">label name</param>
-        /// <param name="param">value</param>
-        private void UpdateToForm(Label label, string param)
-        {
-            this.Invoke(new Action(delegate { label.Text = param; }));
         }
 
         /// <summary>
@@ -121,7 +125,7 @@ namespace idleApp
                 }
                 catch (Exception e)
                 {
-                    System.Console.WriteLine("Error From:" + e.TargetSite + " Message" + e.Message);
+                    Console.WriteLine("Error From:" + e.TargetSite + " Message" + e.Message);
                 }
             }
             else
@@ -133,50 +137,26 @@ namespace idleApp
 
         }
 
-        private void UpdateLog(string value)
-        {
-            CmdrichTextBox.AppendText(value);
-        }
-
         #endregion
 
         #region 事件
-
+        string ClipboardText;
         private void getIDToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            ClipboardText = getClipboard();
             _bw.RunWorkerAsync("Start to Get");
         }
 
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (applist.Count != 0)
-            {
-                if (runapp.Enabled == false)
-                {
-                    runapp.List = applist;
-                    runapp.Time = int.Parse(timeTextBox.Text);
-                    try
-                    {
-                        runapp.Run();
-                        startToolStripMenuItem.Text = "停止";
-                    }
-                    catch(Exception ex)
-                    {
-                        CMDprintError(ex.Message);
-                        MessageBox.Show(ex.Message);
-                    }
-                }
-                else
-                {
-                    runapp.Stop();
-                    startToolStripMenuItem.Text = "开始";
-                }
-            }
+            AppIndex = 0;
+            startOrStopApp();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            runapp.Stop();
+            Kill();
+            config.CardTime = Settings.Default.CardTime;
             string content = JsonHelper.SerializeObject(config);
             FileHelper.WriteFile("config.json", content);
         }
@@ -207,6 +187,12 @@ namespace idleApp
             {
                 e.Handled = true;
             }
+        }
+
+        private void timeTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(timeTextBox.Text))
+                Settings.Default.CardTime = int.Parse(timeTextBox.Text);
         }
 
         private void blackTextBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -255,23 +241,35 @@ namespace idleApp
             }
         }
 
-        private void MainForm_SizeChanged(object sender, EventArgs e)
+        private void MainForm_Resize(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Minimized)  //判断是否最小化
+            if (WindowState == FormWindowState.Minimized)
             {
-                this.ShowInTaskbar = false;  //不显示在系统任务栏
-                notifyIcon1.Visible = true;  //托盘图标可见
+                notifyIcon1.Visible = true;
+                Hide();
+            }
+            else if (WindowState == FormWindowState.Normal)
+            {
+                notifyIcon1.Visible = false;
             }
         }
 
         private void notifyIcon1_DoubleClick(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Minimized)
-            {
-                this.ShowInTaskbar = true;  //显示在系统任务栏
-                this.WindowState = FormWindowState.Normal;  //还原窗体
-                notifyIcon1.Visible = false;  //托盘图标隐藏
-            }
+            Show();
+            WindowState = FormWindowState.Normal;
+        }
+
+        private void twohourToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            StartAllTwoHour();
+            CMDprint("一键2小时");
+        }
+
+        private void clearAppToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Kill();
+            CMDprint("清理进程");
         }
         #endregion
 
@@ -300,7 +298,7 @@ namespace idleApp
             }
             else
             {
-                MessageBox.Show("请复制徽章页面的源代码!", "错误");
+                //MessageBox.Show("请复制徽章页面的源代码!", "错误");
                 return null;
             }
         }
@@ -310,18 +308,18 @@ namespace idleApp
         /// </summary>
         private void initializeConfig()
         {
+            Settings.Default.AppEnabled = false;
             string stream = FileHelper.ReadFile("config.json");
             if (!string.IsNullOrEmpty(stream) && stream != "Error")
             {
                 config = JsonHelper.DeserializeJsonToObject<Config>(stream);
+                Settings.Default.CardTime = config.CardTime;
                 CMDprint("开始装载数据");
             }
             else
             {
                 CMDprintError("配置文件读取失败,启用默认配置");
                 config = new Config();
-                config.RegexID = regexID;
-                config.RegexCard = regexCard;
                 config.CardTime = cardTime;
                 config.Blacklist = defBlackList;
                 config.UpdateUrl = updateUrl;
@@ -346,8 +344,6 @@ namespace idleApp
             helpRichTextBox.Text = help.ToString();
 
             blackTextBox.Text = "输入黑名单ID";
-            regexIDtextBox.Text = config.RegexID;
-            regCardtextBox.Text = config.RegexCard;
             timeTextBox.Text = config.CardTime.ToString();
             foreach (string value in config.Blacklist)
             {
@@ -358,8 +354,6 @@ namespace idleApp
             CMDprint("数据装载完毕");
 
             chelp = new CmdHelper();
-            runapp = new RunApp();
-            runapp.mainThread += new RunApp.uiDelegate(LoadAppInfo);
 
             applist = new List<AppMember>();
 
@@ -372,31 +366,173 @@ namespace idleApp
             _bw.RunWorkerCompleted += bw_RunWorkerCompleted;
         }
 
-        #endregion
-
-        #region CMD
-        public void CMDprint(string value)
+        private void startOrStopApp()
         {
-            string log = string.Format("[{0}]{1}\r\n", DateTime.Now.ToShortTimeString(), value);
+            if (applist.Count != 0)
+            {
+                foreach(AppMember item in applist)
+                {
+                    if(Convert.ToDouble(item.Time) < 2.00)
+                    {
+                        MessageBox.Show("部分游戏时间不足2小时，可能不会出卡", "注意");
+                        break;
+                    }
+                }
+                Kill();
+                //Start
+                if (Settings.Default.AppEnabled == false)
+                {
+                    startToolStripMenuItem.Text = "停止";
+                    Start();
+                }
+                else
+                {
+                    appTimer.Stop();
+                    appTimer.Close();
+                    Kill();
+                    startToolStripMenuItem.Text = "开始";
+                    CMDprint("用户手动停止挂机");
+                    try
+                    {
+                        LoadAppMsg((int)Status.Exit, applist[AppIndex].Id);
+                    }
+                    catch { }
+                }
+            }           
+        }
+
+        private void Start()
+        {
             try
             {
-                UpdateLog(log);
+                sr = new SingleRun(applist[AppIndex]);
+                sr.StartApp();
+                LoadAppMsg((int)Status.Start, applist[AppIndex].Id);
+                appTimer = new System.Timers.Timer();
+#if DEBUG
+                appTimer.Interval = 5000;
+                appTimer.Start();
+#endif
+#if !DEBUG
+                appTimer.Interval = Settings.Default.CardTime;
+#endif
+                appTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            }
+            catch(Exception e)
+            {
+                Settings.Default.AppEnabled = false;
+                LoadAppMsg((int)Status.Exit, applist[AppIndex].Id);
+                CMDprintError(e.Message);
+                MessageBox.Show(e.Message);
+            }
+        }
+
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            if (--sr.Virtualcard < 1)
+            {
+                sr.StopApp();
+                LoadAppMsg((int)Status.End, applist[AppIndex].Id);
+                ++AppIndex;
+                try
+                {
+                    sr = new SingleRun(applist[AppIndex]);
+                    sr.StartApp();
+                    LoadAppMsg((int)Status.Start, applist[AppIndex].Id);
+                }
+                catch
+                {
+                    Settings.Default.AppEnabled = false;
+                    Kill();
+                    appTimer.Stop();
+                    appTimer.Close();
+                    LoadAppMsg((int)Status.Exit, applist[AppIndex - 1].Id);
+                }
+            }
+        }
+
+        private void StartAllTwoHour()
+        {
+            if (applist.Count != 0)
+            {
+                MessageBox.Show("一键2小时的时候别挂机，挂机别2小时", "注意");
+                foreach (AppMember item in applist)
+                {
+                    if (Convert.ToDouble(item.Time) < 2.00)
+                    {
+                        SingleRun srtwo = new SingleRun(item);
+                        srtwo.StartTwoApp();
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// 清理
+        /// </summary>
+        /// <returns></returns>
+        private bool Kill()
+        {
+            try
+            {
+                String username = WindowsIdentity.GetCurrent().Name;
+                foreach (var process in Process.GetProcessesByName("App"))
+                {
+                    ManagementObjectSearcher searcher = new ManagementObjectSearcher("Select * From Win32_Process Where ProcessID = " + process.Id);
+                    ManagementObjectCollection processList = searcher.Get();
+
+                    foreach (ManagementObject obj in processList)
+                    {
+                        string[] argList = new string[] { string.Empty, string.Empty };
+                        int returnVal = Convert.ToInt32(obj.InvokeMethod("GetOwner", argList));
+                        if (returnVal == 0)
+                        {
+                            if (argList[1] + "\\" + argList[0] == username)
+                            {
+                                process.Kill();
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                CMDprintError("清理游戏进程异常");
+                return false;
+            }
+        }
+
+#endregion
+
+#region CMD
+        public void CMDprint(string value)
+        {
+            string log = string.Format("[{0}]{1}\r\n", DateTime.Now.ToLongTimeString(), value);
+            try
+            {
+                CmdrichTextBox.AppendText(log);
             }
             catch (Exception e)
             {
-                this.Invoke(new Action(delegate { UpdateLog(log); }));
+                this.Invoke(new Action(delegate 
+                {
+                    CmdrichTextBox.AppendText(log);
+                }));
             }
         }
         public void CMDprintError(string value)
         {
-            string log = string.Format("[{0}][Error]{1}\r\n", DateTime.Now.ToShortTimeString(), value);
+            string log = string.Format("[{0}][Error]{1}\r\n", DateTime.Now.ToLongTimeString(), value);
             try
             {
-                UpdateLog(log);
+                CmdrichTextBox.AppendText(log);
             }
             catch (Exception e)
             {
-                this.Invoke(new Action(delegate { UpdateLog(log); }));
+                this.Invoke(new Action(delegate 
+                {
+                    CmdrichTextBox.AppendText(log);
+                }));
             }
         }
 
@@ -410,7 +546,6 @@ namespace idleApp
                 tmpcmd = CmdtextBox.Text;
                 CmdtextBox.Clear();
             }
-
         }
 
         private void CmdtextBox_KeyUp(object sender, KeyEventArgs e)
@@ -421,21 +556,28 @@ namespace idleApp
                     CmdtextBox.Text = tmpcmd;
             }
         }
-        #endregion
+#endregion
 
-        #region 处理源码
+#region 处理源码
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {
             GetIDName getidname;
             if (scrtextBox.Text.Length == 0)
             {
-                MessageBox.Show("请复制徽章页面的源代码!", "错误");
+                if(string.IsNullOrWhiteSpace(ClipboardText))
+                {
+                    MessageBox.Show("请复制徽章页面的源代码!", "错误");
+                }
+                else
+                {
+                    getidname = new GetIDName(ClipboardText);
+                    getidname.Badlist = config.Blacklist;
+                    e.Result = getidname.Getid();
+                }
             }
             else
             {
                 getidname = new GetIDName(scrtextBox.Text);
-                getidname.RegexID = regexIDtextBox.Text;
-                getidname.RegexCard = regCardtextBox.Text;
                 getidname.Badlist = config.Blacklist;
                 e.Result = getidname.Getid();
             }
@@ -466,13 +608,15 @@ namespace idleApp
                     lvi.Text = member[i].Id;
                     lvi.SubItems.Add(member[i].Name);
                     lvi.SubItems.Add(member[i].CardNum);
+                    lvi.SubItems.Add(member[i].Time);
                     applistView.Items.Add(lvi);
                 }
             }
         }
-        #endregion
 
-        #region 自动更新
+#endregion
+
+#region 自动更新
         public void checkUpdate()
         {
             if (string.IsNullOrEmpty(config.UpdateUrl))
