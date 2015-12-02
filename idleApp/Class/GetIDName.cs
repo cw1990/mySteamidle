@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,7 +7,6 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows.Forms;
 
 namespace idleApp.Class
 {
@@ -16,34 +16,6 @@ namespace idleApp.Class
         List<string> badlist = new List<string>() { "303700", "368020", "335590", "267420" };
 
         #region 属性
-        string regexID;
-        string regexCard;
-
-        public string RegexID
-        {
-            get
-            {
-                return regexID;
-            }
-
-            set
-            {
-                regexID = value;
-            }
-        }
-
-        public string RegexCard
-        {
-            get
-            {
-                return regexCard;
-            }
-
-            set
-            {
-                regexCard = value;
-            }
-        }
 
         public List<string> Badlist
         {
@@ -70,90 +42,43 @@ namespace idleApp.Class
         }
 
         ///  <summary>
-		///  获取ID数据
-		///  </summary>
-		public List<AppMember> Getid()
+        ///  获取ID数据
+        ///  </summary>
+        public List<AppMember> Getid()
         {
-
-            #region test
-            //<div class=\"badge_title_stats_playtime\">([^<]*)</div> 67-9=58
-
-            //<span class=\"progress_info_bold\">([^<]*)</span> 54
-
-            //<div class=\"card_drop_info_body\">([^<]*)</div> 55
-
-            //<div class="card_drop_info_dialog" id="(.*?)" style 53
-            #endregion
-            if (string.IsNullOrEmpty(regexID) || string.IsNullOrEmpty(regexCard))
-                return null;
-
-            //id
-            MatchCollection mc_id = Regex.Matches(srchtml, regexID);
-            //name
-            MatchCollection mc_card = Regex.Matches(srchtml, regexCard);
-            List<string> tmpcard = new List<string>();
-            for (int i = 0; i < mc_card.Count; i++)
-            {
-                //剔除无效条目
-                if (Regex.IsMatch(mc_card[i].Groups[1].Value, "\\d") && !mc_card[i].Value.Contains("任务"))
-                {
-                    string str = mc_card[i].Groups[1].Value;
-                    string regex = @"(\d+)";
-                    Match mstr = Regex.Match(str, regex);
-                    tmpcard.Add(mstr.Groups[1].Value);
-                }
-            }
+            HtmlDocument document = new HtmlDocument();
+            document.LoadHtml(srchtml);
             List<AppMember> tmplist = new List<AppMember>();
-            if (mc_id.Count != 0)
+            foreach (var badge in document.DocumentNode.SelectNodes("//div[@class=\"badge_row is_link\"]"))
             {
-                for (int i = 0; i < mc_id.Count; i++)
+                var appIdNode = badge.SelectSingleNode(".//a[@class=\"badge_row_overlay\"]").Attributes["href"].Value;
+                var appid = Regex.Match(appIdNode, @"gamecards/(\d+)/").Groups[1].Value;
+
+                if (string.IsNullOrWhiteSpace(appid) || badlist.Contains(appid) || appIdNode.Contains("border=1"))
                 {
-                    if (!badlist.Contains(mc_id[i].Value) && tmpcard[i] != null)
-                    {
-                        AppMember member = new AppMember();
-                        member.Id = mc_id[i].Value;
-                        member.Name = GetAppName(member.Id);
-                        member.CardNum = tmpcard[i];
-                        tmplist.Add(member);
-                    }
+                    continue;
                 }
 
-                return tmplist;
-            }
-            else
-            {
-                return null;
-            }
-        }
+                var hoursNode = badge.SelectSingleNode(".//div[@class=\"badge_title_stats_playtime\"]");
+                var hours = hoursNode == null ? string.Empty : Regex.Match(hoursNode.InnerText, @"[0-9\.,]+").Value;
 
-        /// <summary>
-        /// 拉取Name
-        /// </summary>
-        /// <param name="appid"></param>
-        /// <returns></returns>
-        private string GetAppName(String appid)
-        {
-            try
-            {
-                WebRequest request = WebRequest.Create("http://store.steampowered.com/api/appdetails/?appids=" + appid + "&filters=basic");
-                WebResponse response = request.GetResponse();
-                Stream dataStream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(dataStream, Encoding.UTF8);
-                string api_raw = reader.ReadToEnd();
-                string name = Regex.Match(api_raw, "\"game\",\"name\":\"(.+?)\"").Groups[1].Value;
-                name = name.Replace("\\u00ae", "®");
-                name = name.Replace("\\u2122", "™");
-                name = name.Replace("\\u2019", "'");
-                name = name.Replace("\\u00f6", "ö");
-                reader.Close();
-                response.Close();
-                return name;
-            }
-            catch (Exception e)
-            {
-                return "网络错误,获取失败";
-            }
+                var nameNode = badge.SelectSingleNode(".//div[@class=\"badge_title\"]");
+                var name = WebUtility.HtmlDecode(nameNode.FirstChild.InnerText).Trim();
 
-        }
+                var cardNode = badge.SelectSingleNode(".//span[@class=\"progress_info_bold\"]");
+                var cards = cardNode == null ? string.Empty : Regex.Match(cardNode.InnerText, @"[0-9]+").Value;
+
+                if(!string.IsNullOrWhiteSpace(cards))
+                {
+                    AppMember member = new AppMember();
+                    member.Id = appid;
+                    member.Name = name;
+                    member.CardNum = cards;
+                    member.Time = hours == string.Empty ? "0" : hours;
+                    tmplist.Add(member);
+                }
+            }
+            return tmplist;
+        }     
     }
 }
