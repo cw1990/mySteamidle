@@ -10,6 +10,7 @@ namespace idleApp
         string id;
         string name;
         string cardNum;
+        string time;
 
         public string Id
         {
@@ -47,6 +48,19 @@ namespace idleApp
             set
             {
                 cardNum = value;
+            }
+        }
+
+        public string Time
+        {
+            get
+            {
+                return time;
+            }
+
+            set
+            {
+                time = value;
             }
         }
     }
