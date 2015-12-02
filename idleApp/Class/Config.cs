@@ -10,37 +10,9 @@ namespace idleApp.Class
     /// </summary>
     public class Config
     {
-        private string regexID;
-        private string regexCard;
         private int cardTime;
         private List<string> blacklist = new List<string>();
-        private string updateUrl;
-
-        public string RegexID
-        {
-            get
-            {
-                return regexID;
-            }
-
-            set
-            {
-                regexID = value;
-            }
-        }
-
-        public string RegexCard
-        {
-            get
-            {
-                return regexCard;
-            }
-
-            set
-            {
-                regexCard = value;
-            }
-        }
+        private string updateUrl;      
 
         public int CardTime
         {
