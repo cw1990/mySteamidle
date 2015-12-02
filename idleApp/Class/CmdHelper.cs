@@ -26,13 +26,16 @@ namespace idleApp.Class
             cmdHelpText.Append("       注意:控制台功能正在开发中\r\n");
             cmdHelpText.Append("       help,查看帮助\r\n");
             cmdHelpText.Append("       run,运行单个程序\r\n");
-            cmdHelpText.Append("       stop,停止运行\r\n");
-            cmdHelpText.Append("       update,检查更新\r\n");
+            //cmdHelpText.Append("       stop,停止运行\r\n");
+            //cmdHelpText.Append("       update,检查更新\r\n");
 
             Func<string[],string> help = p => HelpCmd(p);
 
+            Func<string[], string> run = p => RunCmd(p);
+
             cmdlist = new Hashtable();
             cmdlist.Add("help", help);
+            cmdlist.Add("run", run);
         }
 
         #region 命令
@@ -40,7 +43,20 @@ namespace idleApp.Class
         {
             if(param.Length > 1)
             {
-                return param[1];
+                StringBuilder cmdTmpText = new StringBuilder();
+                switch(param[1])
+                {
+                    case "run":
+                        cmdTmpText.Append("用法: run gameid [-t time]\r\n");
+                        cmdTmpText.Append("选项:\r\n");
+                        cmdTmpText.Append("   -t time [功能尚未实现]运行的时间长度,time为分钟");
+                        cmdTmpText.Append("范例: run 570");
+                        return cmdTmpText.ToString();
+                        break;
+                    default:
+                        return cmdHelpText.ToString();
+                        break;
+                }
             }
             else
             {
@@ -48,13 +64,32 @@ namespace idleApp.Class
             }
         }
 
-        //private string RunCmd(string param)
-        //{
-        //    string[] params = param
-        //}
+        private string RunCmd(string[] param)
+        {
+            StringBuilder cmdRunText = new StringBuilder();
+            if (param.Length > 1)
+            {
+                if (CmdRunApp(param[1]))
+                {
+                    cmdRunText.AppendFormat("ID：{0}启动成功。如果没有启动，请检查是否被安全软件阻拦",param[1]);
+                    return cmdRunText.ToString();
+                }
+                else
+                {
+                    cmdRunText.AppendFormat("挂机程序启动被阻止,请检查是否被安全软件阻拦");
+                    return cmdRunText.ToString();
+                }
+
+            }
+            else
+            {
+                cmdRunText.Append("命令错误，请输入help run查阅帮助");
+                return cmdRunText.ToString();
+            }
+        }
         #endregion
 
-
+        #region 功能
         /// <summary>
         /// 检查命令
         /// </summary>
@@ -93,6 +128,33 @@ namespace idleApp.Class
             else
                 return null; //没有匹配的键值
         }
+        #endregion
 
+        #region Run
+        private System.Diagnostics.Process gameApp;
+        private bool CmdRunApp(string mArguments)
+        {
+            gameApp = new System.Diagnostics.Process();
+            gameApp.StartInfo.UseShellExecute = true;
+            gameApp.StartInfo.CreateNoWindow = true;
+            gameApp.StartInfo.FileName = "App.exe";
+            gameApp.StartInfo.Arguments = mArguments;
+
+            try
+            {
+                gameApp.Start();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void CmdStopApp()
+        {
+
+        }
+        #endregion
     }
 }
