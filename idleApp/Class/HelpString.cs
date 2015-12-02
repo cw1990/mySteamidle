@@ -12,10 +12,9 @@ namespace idleApp.Class
         public HelpString()
         {
             help = new StringBuilder();
-            help.Append("1.如果不能加载游戏名称\r\n");
+            help.Append("1.如果不能加载游戏图片\r\n");
             help.Append("应该是网络问题\r\n");
-            help.Append("因为游戏名称是从steam官网上拉下来的\r\n");
-            help.Append("右下角的图片同理\r\n");
+            help.Append("因为游戏图片是从steam官网上拉下来的\r\n");
             help.Append("不影响挂机的\r\n");
             help.Append("\r\n");
             help.Append("2.如果游戏没有启动\r\n");
