@@ -46,5 +46,17 @@ namespace idleApp.Properties {
                 this["AppEnabled"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int MaxGameNum {
+            get {
+                return ((int)(this["MaxGameNum"]));
+            }
+            set {
+                this["MaxGameNum"] = value;
+            }
+        }
     }
 }
