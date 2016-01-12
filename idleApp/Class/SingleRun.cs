@@ -45,7 +45,7 @@ namespace idleApp.Class
             gameApp.StartInfo.FileName = "App.exe";
             gameApp.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             StringBuilder mArguments = new StringBuilder();
-            mArguments.AppendFormat("{0} {1}", App.Id, App.Name);
+            mArguments.AppendFormat("{0} {1}", App.Id, ToBase64(App.Name));
             gameApp.StartInfo.Arguments = mArguments.ToString();
 
             try
@@ -72,10 +72,7 @@ namespace idleApp.Class
             gameApp.StartInfo.CreateNoWindow = true;
             gameApp.StartInfo.FileName = "App.exe";
             StringBuilder mArguments = new StringBuilder();
-            string base64name = App.Name;
-            byte[] messageByte = Encoding.UTF8.GetBytes(base64name);
-            base64name = Convert.ToBase64String(messageByte);
-            mArguments.AppendFormat("{0} {1}", App.Id, base64name);
+            mArguments.AppendFormat("{0} {1}", App.Id, ToBase64(App.Name));
             gameApp.StartInfo.Arguments = mArguments.ToString();
 
             try
@@ -104,6 +101,14 @@ namespace idleApp.Class
             {
                 //throw new Exception("结束异常,请检查是否被安全软件阻拦");
             }
+        }
+
+        private string ToBase64(string value)
+        {
+            string base64name = value;
+            byte[] messageByte = Encoding.UTF8.GetBytes(base64name);
+            base64name = Convert.ToBase64String(messageByte);
+            return base64name;
         }
     }
 }

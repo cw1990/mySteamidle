@@ -12,7 +12,8 @@ namespace idleApp.Class
     {
         private int cardTime;
         private List<string> blacklist = new List<string>();
-        private string updateUrl;      
+        private string updateUrl;
+        private int maxGameNum;   
 
         public int CardTime
         {
@@ -50,6 +51,19 @@ namespace idleApp.Class
             set
             {
                 updateUrl = value;
+            }
+        }
+
+        public int MaxGameNum
+        {
+            get
+            {
+                return maxGameNum;
+            }
+
+            set
+            {
+                maxGameNum = value;
             }
         }
     }

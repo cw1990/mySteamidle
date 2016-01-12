@@ -49,36 +49,43 @@ namespace idleApp.Class
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(srchtml);
             List<AppMember> tmplist = new List<AppMember>();
-            foreach (var badge in document.DocumentNode.SelectNodes("//div[@class=\"badge_row is_link\"]"))
+            try
             {
-                var appIdNode = badge.SelectSingleNode(".//a[@class=\"badge_row_overlay\"]").Attributes["href"].Value;
-                var appid = Regex.Match(appIdNode, @"gamecards/(\d+)/").Groups[1].Value;
-
-                if (string.IsNullOrWhiteSpace(appid) || badlist.Contains(appid) || appIdNode.Contains("border=1"))
+                foreach (var badge in document.DocumentNode.SelectNodes("//div[@class=\"badge_row is_link\"]"))
                 {
-                    continue;
-                }
+                    var appIdNode = badge.SelectSingleNode(".//a[@class=\"badge_row_overlay\"]").Attributes["href"].Value;
+                    var appid = Regex.Match(appIdNode, @"gamecards/(\d+)/").Groups[1].Value;
 
-                var hoursNode = badge.SelectSingleNode(".//div[@class=\"badge_title_stats_playtime\"]");
-                var hours = hoursNode == null ? string.Empty : Regex.Match(hoursNode.InnerText, @"[0-9\.,]+").Value;
+                    if (string.IsNullOrWhiteSpace(appid) || badlist.Contains(appid) || appIdNode.Contains("border=1"))
+                    {
+                        continue;
+                    }
 
-                var nameNode = badge.SelectSingleNode(".//div[@class=\"badge_title\"]");
-                var name = WebUtility.HtmlDecode(nameNode.FirstChild.InnerText).Trim();
+                    var hoursNode = badge.SelectSingleNode(".//div[@class=\"badge_title_stats_playtime\"]");
+                    var hours = hoursNode == null ? string.Empty : Regex.Match(hoursNode.InnerText, @"[0-9\.,]+").Value;
 
-                var cardNode = badge.SelectSingleNode(".//span[@class=\"progress_info_bold\"]");
-                var cards = cardNode == null ? string.Empty : Regex.Match(cardNode.InnerText, @"[0-9]+").Value;
+                    var nameNode = badge.SelectSingleNode(".//div[@class=\"badge_title\"]");
+                    var name = WebUtility.HtmlDecode(nameNode.FirstChild.InnerText).Trim();
 
-                if(!string.IsNullOrWhiteSpace(cards))
-                {
-                    AppMember member = new AppMember();
-                    member.Id = appid;
-                    member.Name = name;
-                    member.CardNum = cards;
-                    member.Time = hours == string.Empty ? "0" : hours;
-                    tmplist.Add(member);
+                    var cardNode = badge.SelectSingleNode(".//span[@class=\"progress_info_bold\"]");
+                    var cards = cardNode == null ? string.Empty : Regex.Match(cardNode.InnerText, @"[0-9]+").Value;
+
+                    if (!string.IsNullOrWhiteSpace(cards))
+                    {
+                        AppMember member = new AppMember();
+                        member.Id = appid;
+                        member.Name = name;
+                        member.CardNum = cards;
+                        member.Time = hours == string.Empty ? "0" : hours;
+                        tmplist.Add(member);
+                    }
                 }
             }
+            catch
+            {
+                throw new Exception("源代码不正确");
+            }
             return tmplist;
-        }     
+        }  
     }
 }

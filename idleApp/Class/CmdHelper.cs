@@ -47,16 +47,19 @@ namespace idleApp.Class
                 switch(param[1])
                 {
                     case "run":
-                        cmdTmpText.Append("用法: run gameid [-t time]\r\n");
+                        cmdTmpText.Append("用法: run [id] [name]\r\n");
                         cmdTmpText.Append("选项:\r\n");
-                        cmdTmpText.Append("   -t time [功能尚未实现]运行的时间长度,time为分钟");
-                        cmdTmpText.Append("范例: run 570");
-                        return cmdTmpText.ToString();
+                        cmdTmpText.Append("   id GameID\r\n");
+                        cmdTmpText.Append("   name 显示的Game名称，可自定义(名字里不要带空格)\r\n");
+                        cmdTmpText.Append("范例:\r\n");
+                        cmdTmpText.Append("   run 570\r\n");
+                        cmdTmpText.Append("   run 570 Word2016");
                         break;
                     default:
-                        return cmdHelpText.ToString();
+                        cmdTmpText.AppendFormat("{0}不是有效命令",param[1]);
                         break;
                 }
+                return cmdTmpText.ToString();
             }
             else
             {
@@ -69,7 +72,7 @@ namespace idleApp.Class
             StringBuilder cmdRunText = new StringBuilder();
             if (param.Length > 1)
             {
-                if (CmdRunApp(param[1]))
+                if (CmdRunApp(param))
                 {
                     cmdRunText.AppendFormat("ID：{0}启动成功。如果没有启动，请检查是否被安全软件阻拦",param[1]);
                     return cmdRunText.ToString();
@@ -132,13 +135,20 @@ namespace idleApp.Class
 
         #region Run
         private System.Diagnostics.Process gameApp;
-        private bool CmdRunApp(string mArguments)
+        private bool CmdRunApp(string[] mArguments)
         {
             gameApp = new System.Diagnostics.Process();
             gameApp.StartInfo.UseShellExecute = true;
             gameApp.StartInfo.CreateNoWindow = true;
             gameApp.StartInfo.FileName = "App.exe";
-            gameApp.StartInfo.Arguments = mArguments;
+            try
+            {
+                gameApp.StartInfo.Arguments = string.Format("{0} {1}", mArguments[1], ToBase64(mArguments[2]));
+            }
+            catch
+            {
+                gameApp.StartInfo.Arguments = mArguments[1];
+            }
 
             try
             {
@@ -156,5 +166,13 @@ namespace idleApp.Class
 
         }
         #endregion
+
+        private string ToBase64(string value)
+        {
+            string base64name = value;
+            byte[] messageByte = Encoding.UTF8.GetBytes(base64name);
+            base64name = Convert.ToBase64String(messageByte);
+            return base64name;
+        }
     }
 }
