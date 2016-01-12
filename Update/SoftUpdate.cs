@@ -48,6 +48,7 @@ namespace Update
         private bool isUpdate;
         private string updateUrl;
         private string updatehelp;
+        private string notice;
 
         /// <summary>
         /// 或取是否需要更新
@@ -106,6 +107,22 @@ namespace Update
             get
             {
                 return updatehelp;
+            }
+        }
+
+        /// <summary>
+        /// 公告
+        /// </summary>
+        public string Notice
+        {
+            get
+            {
+                return notice;
+            }
+
+            set
+            {
+                notice = value;
             }
         }
 
@@ -206,6 +223,9 @@ namespace Update
                                 case "Help":
                                     updatehelp = xml.InnerText;
                                     break;
+                                case "Notice":
+                                    notice = xml.InnerText;
+                                    break;
                             }
                         }
                     }
@@ -220,7 +240,7 @@ namespace Update
                 else
                     isUpdate = true;
             }
-            catch (Exception ex)
+            catch
             {
                 throw new Exception("更新出现错误，请确认网络连接无误后重试！");
             }
