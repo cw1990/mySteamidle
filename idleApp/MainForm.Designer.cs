@@ -34,6 +34,9 @@
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.getIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dELToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.小时挂机功能ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.twohourToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearAppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -54,6 +57,8 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.helpRichTextBox = new System.Windows.Forms.RichTextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.gameNumTextBox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.timeTextBox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -62,6 +67,14 @@
             this.blackAddButton = new System.Windows.Forms.Button();
             this.backlistView = new System.Windows.Forms.ListView();
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.cGetButton = new System.Windows.Forms.Button();
+            this.cAddListButton = new System.Windows.Forms.Button();
+            this.cApplistView = new System.Windows.Forms.ListView();
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label6 = new System.Windows.Forms.Label();
@@ -69,8 +82,6 @@
             this.CmdrichTextBox = new System.Windows.Forms.RichTextBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.twohourToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.clearAppToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -79,6 +90,7 @@
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.tabPage4.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -89,9 +101,8 @@
             this.startToolStripMenuItem,
             this.getIDToolStripMenuItem,
             this.dELToolStripMenuItem,
-            this.aboutToolStripMenuItem,
-            this.twohourToolStripMenuItem,
-            this.clearAppToolStripMenuItem});
+            this.小时挂机功能ToolStripMenuItem,
+            this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(518, 25);
@@ -119,6 +130,29 @@
             this.dELToolStripMenuItem.Text = "删除选中项";
             this.dELToolStripMenuItem.Click += new System.EventHandler(this.dELToolStripMenuItem_Click);
             // 
+            // 小时挂机功能ToolStripMenuItem
+            // 
+            this.小时挂机功能ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.twohourToolStripMenuItem,
+            this.clearAppToolStripMenuItem});
+            this.小时挂机功能ToolStripMenuItem.Name = "小时挂机功能ToolStripMenuItem";
+            this.小时挂机功能ToolStripMenuItem.Size = new System.Drawing.Size(99, 21);
+            this.小时挂机功能ToolStripMenuItem.Text = "2小时挂机功能";
+            // 
+            // twohourToolStripMenuItem
+            // 
+            this.twohourToolStripMenuItem.Name = "twohourToolStripMenuItem";
+            this.twohourToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.twohourToolStripMenuItem.Text = "一键2小时挂机";
+            this.twohourToolStripMenuItem.Click += new System.EventHandler(this.twohourToolStripMenuItem_Click);
+            // 
+            // clearAppToolStripMenuItem
+            // 
+            this.clearAppToolStripMenuItem.Name = "clearAppToolStripMenuItem";
+            this.clearAppToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.clearAppToolStripMenuItem.Text = "一键关闭游戏";
+            this.clearAppToolStripMenuItem.Click += new System.EventHandler(this.clearAppToolStripMenuItem_Click);
+            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
@@ -130,12 +164,13 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 25);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(518, 336);
+            this.tabControl1.Size = new System.Drawing.Size(518, 337);
             this.tabControl1.TabIndex = 12;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -153,7 +188,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(510, 310);
+            this.tabPage1.Size = new System.Drawing.Size(510, 311);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "本体";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -216,7 +251,7 @@
             // picApp
             // 
             this.picApp.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.picApp.Location = new System.Drawing.Point(323, 238);
+            this.picApp.Location = new System.Drawing.Point(323, 239);
             this.picApp.MaximumSize = new System.Drawing.Size(184, 69);
             this.picApp.Name = "picApp";
             this.picApp.Size = new System.Drawing.Size(184, 69);
@@ -246,7 +281,7 @@
             this.applistView.Location = new System.Drawing.Point(3, 3);
             this.applistView.MultiSelect = false;
             this.applistView.Name = "applistView";
-            this.applistView.Size = new System.Drawing.Size(320, 304);
+            this.applistView.Size = new System.Drawing.Size(320, 305);
             this.applistView.TabIndex = 12;
             this.applistView.UseCompatibleStateImageBehavior = false;
             this.applistView.View = System.Windows.Forms.View.Details;
@@ -277,7 +312,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(510, 310);
+            this.tabPage2.Size = new System.Drawing.Size(510, 311);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "设置";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -304,6 +339,8 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.gameNumTextBox);
+            this.groupBox3.Controls.Add(this.label3);
             this.groupBox3.Controls.Add(this.timeTextBox);
             this.groupBox3.Controls.Add(this.label5);
             this.groupBox3.Location = new System.Drawing.Point(141, 3);
@@ -312,6 +349,24 @@
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "设置";
+            // 
+            // gameNumTextBox
+            // 
+            this.gameNumTextBox.Location = new System.Drawing.Point(8, 56);
+            this.gameNumTextBox.Name = "gameNumTextBox";
+            this.gameNumTextBox.Size = new System.Drawing.Size(100, 21);
+            this.gameNumTextBox.TabIndex = 3;
+            this.gameNumTextBox.TextChanged += new System.EventHandler(this.gameNumTextBox_TextChanged);
+            this.gameNumTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.gameNumTextBox_KeyPress);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 41);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(179, 12);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "2小时挂机最大游戏数量(最多30)\r\n";
             // 
             // timeTextBox
             // 
@@ -341,7 +396,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Left;
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(132, 304);
+            this.groupBox2.Size = new System.Drawing.Size(132, 305);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "黑名单";
@@ -393,6 +448,76 @@
             this.columnHeader4.Text = "ID";
             this.columnHeader4.Width = 110;
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.cGetButton);
+            this.tabPage4.Controls.Add(this.cAddListButton);
+            this.tabPage4.Controls.Add(this.cApplistView);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Size = new System.Drawing.Size(510, 311);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "自定义获取ID";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // cGetButton
+            // 
+            this.cGetButton.Location = new System.Drawing.Point(8, 279);
+            this.cGetButton.Name = "cGetButton";
+            this.cGetButton.Size = new System.Drawing.Size(120, 23);
+            this.cGetButton.TabIndex = 15;
+            this.cGetButton.Text = "从剪贴板中获取ID";
+            this.cGetButton.UseVisualStyleBackColor = true;
+            this.cGetButton.Click += new System.EventHandler(this.cGetButton_Click);
+            // 
+            // cAddListButton
+            // 
+            this.cAddListButton.Location = new System.Drawing.Point(134, 279);
+            this.cAddListButton.Name = "cAddListButton";
+            this.cAddListButton.Size = new System.Drawing.Size(120, 23);
+            this.cAddListButton.TabIndex = 14;
+            this.cAddListButton.Text = "添加已勾选的ID";
+            this.cAddListButton.UseVisualStyleBackColor = true;
+            this.cAddListButton.Click += new System.EventHandler(this.cAddListButton_Click);
+            // 
+            // cApplistView
+            // 
+            this.cApplistView.BackColor = System.Drawing.Color.White;
+            this.cApplistView.CheckBoxes = true;
+            this.cApplistView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader6,
+            this.columnHeader7,
+            this.columnHeader8,
+            this.columnHeader9});
+            this.cApplistView.Dock = System.Windows.Forms.DockStyle.Top;
+            this.cApplistView.FullRowSelect = true;
+            this.cApplistView.GridLines = true;
+            this.cApplistView.Location = new System.Drawing.Point(0, 0);
+            this.cApplistView.MultiSelect = false;
+            this.cApplistView.Name = "cApplistView";
+            this.cApplistView.Size = new System.Drawing.Size(510, 273);
+            this.cApplistView.TabIndex = 13;
+            this.cApplistView.UseCompatibleStateImageBehavior = false;
+            this.cApplistView.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "ID";
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "Name";
+            this.columnHeader7.Width = 319;
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "Card";
+            this.columnHeader8.Width = 46;
+            // 
+            // columnHeader9
+            // 
+            this.columnHeader9.Text = "Horus";
+            // 
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.Black;
@@ -400,7 +525,7 @@
             this.tabPage3.Controls.Add(this.CmdrichTextBox);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(510, 310);
+            this.tabPage3.Size = new System.Drawing.Size(510, 311);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "控制台";
             // 
@@ -410,7 +535,7 @@
             this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.CmdtextBox);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 285);
+            this.panel1.Location = new System.Drawing.Point(0, 286);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(510, 25);
             this.panel1.TabIndex = 2;
@@ -463,25 +588,11 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
             // 
-            // twohourToolStripMenuItem
-            // 
-            this.twohourToolStripMenuItem.Name = "twohourToolStripMenuItem";
-            this.twohourToolStripMenuItem.Size = new System.Drawing.Size(87, 21);
-            this.twohourToolStripMenuItem.Text = "一键挂2小时";
-            this.twohourToolStripMenuItem.Click += new System.EventHandler(this.twohourToolStripMenuItem_Click);
-            // 
-            // clearAppToolStripMenuItem
-            // 
-            this.clearAppToolStripMenuItem.Name = "clearAppToolStripMenuItem";
-            this.clearAppToolStripMenuItem.Size = new System.Drawing.Size(92, 21);
-            this.clearAppToolStripMenuItem.Text = "一键关闭游戏";
-            this.clearAppToolStripMenuItem.Click += new System.EventHandler(this.clearAppToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(518, 361);
+            this.ClientSize = new System.Drawing.Size(518, 362);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -505,6 +616,7 @@
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.tabPage4.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -554,8 +666,19 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.Button cAddListButton;
+        private System.Windows.Forms.ListView cApplistView;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
+        private System.Windows.Forms.ColumnHeader columnHeader8;
+        private System.Windows.Forms.ColumnHeader columnHeader9;
+        private System.Windows.Forms.Button cGetButton;
+        private System.Windows.Forms.ToolStripMenuItem 小时挂机功能ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem twohourToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearAppToolStripMenuItem;
+        private System.Windows.Forms.TextBox gameNumTextBox;
+        private System.Windows.Forms.Label label3;
     }
 }
 

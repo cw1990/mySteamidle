@@ -19,27 +19,30 @@ namespace idleApp
         Exit = 1,
         End = 2
     }
-    public partial class  MainForm : Form
+    public partial class MainForm : Form
     {
         UpdateForm upform;
         List<AppMember> applist;
-        //RunApp runapp;
+        List<AppMember> cApplist;
         CmdHelper chelp;
         BackgroundWorker _bw;
+        BackgroundWorker _cbw;
         Config config = new Config();
-        //Client wbc;
         System.Timers.Timer appTimer;
         SingleRun sr;
 
         #region 临时变量
         string tmpcmd = "";
         int AppIndex = 0;
+        string ClipboardText;
+        string tmpnotice;
         #endregion
 
         #region 默认参数
         string updateUrl = "http://zha7.net/update.xml";//升级配置的XML文件地址
-        int cardTime = 20;//分钟
+        int cardTime = 60;//分钟
         List<string> defBlackList = new List<string> { "303700", "368020", "335590", "267420" };
+        int maxGameNum = 30;
         #endregion
 
         public MainForm()
@@ -54,7 +57,10 @@ namespace idleApp
             initializeForm(config);
 
 #if !DEBUG
-            MessageBox.Show("你的徽章页面有可能是大余1页的，请选择有卡挂的页面复制源码", "游戏很多的大佬请注意");
+            MyMessageForm mMsgForm = new MyMessageForm();
+            if (string.IsNullOrWhiteSpace(tmpnotice))
+                tmpnotice = "你的徽章页面有可能是大余1页的，请选择有卡挂的页面复制源码";
+            mMsgForm.Show(tmpnotice, "公告", MyMessageForm.MessageButton.OK);
 #endif
         }
 
@@ -138,141 +144,7 @@ namespace idleApp
         }
 
         #endregion
-
-        #region 事件
-        string ClipboardText;
-        private void getIDToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ClipboardText = getClipboard();
-            _bw.RunWorkerAsync("Start to Get");
-        }
-
-        private void startToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AppIndex = 0;
-            startOrStopApp();
-        }
-
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Kill();
-            config.CardTime = Settings.Default.CardTime;
-            string content = JsonHelper.SerializeObject(config);
-            FileHelper.WriteFile("config.json", content);
-        }
-
-        private void clearTextbutton_Click(object sender, EventArgs e)
-        {
-            scrtextBox.Clear();
-        }
-
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            System.Diagnostics.Process.Start("http://zha7.net");
-        }
-
-        private void dELToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (applistView.SelectedItems.Count > 0)
-            {
-                applist.RemoveAt(applistView.SelectedItems[0].Index);
-                applistView.Items.Remove(applistView.SelectedItems[0]);
-            }
-        }
-
-        private void timeTextBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            //8是退格
-            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char)8)
-            {
-                e.Handled = true;
-            }
-        }
-
-        private void timeTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(timeTextBox.Text))
-                Settings.Default.CardTime = int.Parse(timeTextBox.Text);
-        }
-
-        private void blackTextBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            //8是退格
-            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char)8)
-            {
-                e.Handled = true;
-            }
-        }
-
-        private void blackAddButton_Click(object sender, EventArgs e)
-        {
-            if (blackTextBox.Text != "输入黑名单ID")
-            {
-                ListViewItem lvi = new ListViewItem();
-                lvi.Text = blackTextBox.Text;
-                backlistView.Items.Add(lvi);
-                config.Blacklist.Add(blackTextBox.Text);
-            }
-        }
-
-        private void blackDelButton_Click(object sender, EventArgs e)
-        {
-            if (backlistView.SelectedItems.Count > 0)
-            {
-                if (!defBlackList.Contains(backlistView.SelectedItems[0].Text))
-                {
-                    config.Blacklist.RemoveAt(backlistView.SelectedItems[0].Index);
-                    backlistView.Items.Remove(backlistView.SelectedItems[0]);
-                }
-            }
-        }
-
-        private void CmdrichTextBox_TextChanged(object sender, EventArgs e)
-        {
-            CmdrichTextBox.SelectionStart = CmdrichTextBox.Text.Length; //Set the current caret position at the end
-            CmdrichTextBox.ScrollToCaret(); //Now scroll it automatically
-        }
-
-        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (tabControl1.TabPages[tabControl1.SelectedIndex].Text == "控制台")
-            {
-                CmdtextBox.Focus();
-            }
-        }
-
-        private void MainForm_Resize(object sender, EventArgs e)
-        {
-            if (WindowState == FormWindowState.Minimized)
-            {
-                notifyIcon1.Visible = true;
-                Hide();
-            }
-            else if (WindowState == FormWindowState.Normal)
-            {
-                notifyIcon1.Visible = false;
-            }
-        }
-
-        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
-        {
-            Show();
-            WindowState = FormWindowState.Normal;
-        }
-
-        private void twohourToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            StartAllTwoHour();
-            CMDprint("一键2小时");
-        }
-
-        private void clearAppToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Kill();
-            CMDprint("清理进程");
-        }
-        #endregion
-
+     
         #region 其他方法
 
         public int getRandomNum()
@@ -314,6 +186,7 @@ namespace idleApp
             {
                 config = JsonHelper.DeserializeJsonToObject<Config>(stream);
                 Settings.Default.CardTime = config.CardTime;
+                Settings.Default.MaxGameNum = config.MaxGameNum;
                 CMDprint("开始装载数据");
             }
             else
@@ -323,6 +196,7 @@ namespace idleApp
                 config.CardTime = cardTime;
                 config.Blacklist = defBlackList;
                 config.UpdateUrl = updateUrl;
+                config.MaxGameNum = maxGameNum;
             }
         }
 
@@ -345,6 +219,9 @@ namespace idleApp
 
             blackTextBox.Text = "输入黑名单ID";
             timeTextBox.Text = config.CardTime.ToString();
+            if (config.MaxGameNum <= 0)
+                config.MaxGameNum = 30;
+            gameNumTextBox.Text = config.MaxGameNum.ToString();
             foreach (string value in config.Blacklist)
             {
                 ListViewItem lvi = new ListViewItem();
@@ -356,6 +233,7 @@ namespace idleApp
             chelp = new CmdHelper();
 
             applist = new List<AppMember>();
+            cApplist = new List<AppMember>();
 
             //int Snum = getRandomNum();
             //Snumlabel.Text = "SNum:" + Snum.ToString();
@@ -364,24 +242,28 @@ namespace idleApp
             _bw = new BackgroundWorker();
             _bw.DoWork += bw_DoWork;
             _bw.RunWorkerCompleted += bw_RunWorkerCompleted;
+
+            _cbw = new BackgroundWorker();
+            _cbw.DoWork += _cbw_DoWork;
+            _cbw.RunWorkerCompleted += _cbw_RunWorkerCompleted;
         }
 
         private void startOrStopApp()
         {
             if (applist.Count != 0)
             {
-                foreach(AppMember item in applist)
-                {
-                    if(Convert.ToDouble(item.Time) < 2.00)
-                    {
-                        MessageBox.Show("部分游戏时间不足2小时，可能不会出卡", "注意");
-                        break;
-                    }
-                }
-                Kill();
                 //Start
                 if (Settings.Default.AppEnabled == false)
                 {
+                    foreach (AppMember item in applist)
+                    {
+                        if (Convert.ToDouble(item.Time) < 2.00)
+                        {
+                            MessageBox.Show("部分游戏时间不足2小时，可能不会出卡", "注意");
+                            break;
+                        }
+                    }
+                    Kill();
                     startToolStripMenuItem.Text = "停止";
                     Start();
                 }
@@ -398,7 +280,7 @@ namespace idleApp
                     }
                     catch { }
                 }
-            }           
+            }
         }
 
         private void Start()
@@ -409,16 +291,11 @@ namespace idleApp
                 sr.StartApp();
                 LoadAppMsg((int)Status.Start, applist[AppIndex].Id);
                 appTimer = new System.Timers.Timer();
-#if DEBUG
-                appTimer.Interval = 5000;
+                appTimer.Interval = Settings.Default.CardTime * 60000;
                 appTimer.Start();
-#endif
-#if !DEBUG
-                appTimer.Interval = Settings.Default.CardTime;
-#endif
                 appTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Settings.Default.AppEnabled = false;
                 LoadAppMsg((int)Status.Exit, applist[AppIndex].Id);
@@ -440,13 +317,14 @@ namespace idleApp
                     sr.StartApp();
                     LoadAppMsg((int)Status.Start, applist[AppIndex].Id);
                 }
-                catch
+                catch(Exception ex)
                 {
                     Settings.Default.AppEnabled = false;
                     Kill();
                     appTimer.Stop();
                     appTimer.Close();
                     LoadAppMsg((int)Status.Exit, applist[AppIndex - 1].Id);
+                    CMDprintError(ex.Message);
                 }
             }
         }
@@ -455,14 +333,17 @@ namespace idleApp
         {
             if (applist.Count != 0)
             {
+                CMDprint("一键2小时");
                 MessageBox.Show("一键2小时的时候别挂机，挂机别2小时", "注意");
+                int i = 0;
                 foreach (AppMember item in applist)
                 {
-                    if (Convert.ToDouble(item.Time) < 2.00)
+                    if (Convert.ToDouble(item.Time) < 2.00 && i < 30)
                     {
                         SingleRun srtwo = new SingleRun(item);
                         srtwo.StartTwoApp();
-                    }
+                        i++;
+                    }               
                 }
             }
         }
@@ -493,6 +374,7 @@ namespace idleApp
                         }
                     }
                 }
+                Settings.Default.AppEnabled = false;
                 return true;
             }
             catch (Exception)
@@ -502,9 +384,9 @@ namespace idleApp
             }
         }
 
-#endregion
+        #endregion
 
-#region CMD
+        #region CMD
         public void CMDprint(string value)
         {
             string log = string.Format("[{0}]{1}\r\n", DateTime.Now.ToLongTimeString(), value);
@@ -514,7 +396,7 @@ namespace idleApp
             }
             catch (Exception e)
             {
-                this.Invoke(new Action(delegate 
+                this.Invoke(new Action(delegate
                 {
                     CmdrichTextBox.AppendText(log);
                 }));
@@ -529,7 +411,7 @@ namespace idleApp
             }
             catch (Exception e)
             {
-                this.Invoke(new Action(delegate 
+                this.Invoke(new Action(delegate
                 {
                     CmdrichTextBox.AppendText(log);
                 }));
@@ -553,33 +435,40 @@ namespace idleApp
             if (e.KeyCode == Keys.Up)
             {
                 if (!string.IsNullOrEmpty(tmpcmd))
-                    CmdtextBox.Text = tmpcmd;
+                    CmdtextBox.Text = tmpcmd; CmdtextBox.Select(CmdtextBox.TextLength, 0);
             }
         }
-#endregion
+        #endregion
 
-#region 处理源码
+        #region 处理源码
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {
             GetIDName getidname;
-            if (scrtextBox.Text.Length == 0)
+            try
             {
-                if(string.IsNullOrWhiteSpace(ClipboardText))
+                if (scrtextBox.Text.Length == 0)
                 {
-                    MessageBox.Show("请复制徽章页面的源代码!", "错误");
+                    if (string.IsNullOrWhiteSpace(ClipboardText))
+                    {
+                        MessageBox.Show("请复制徽章页面的源代码!", "错误");
+                    }
+                    else
+                    {
+                        getidname = new GetIDName(ClipboardText);
+                        getidname.Badlist = config.Blacklist;
+                        e.Result = getidname.Getid();
+                    }
                 }
                 else
                 {
-                    getidname = new GetIDName(ClipboardText);
+                    getidname = new GetIDName(scrtextBox.Text);
                     getidname.Badlist = config.Blacklist;
                     e.Result = getidname.Getid();
                 }
             }
-            else
+            catch(Exception ex)
             {
-                getidname = new GetIDName(scrtextBox.Text);
-                getidname.Badlist = config.Blacklist;
-                e.Result = getidname.Getid();
+                CMDprintError(ex.Message);
             }
         }
 
@@ -592,31 +481,75 @@ namespace idleApp
             else
             {
                 List<AppMember> tmp = (List<AppMember>)e.Result;
-                LoadAppData(tmp);
+                applist = tmp;
+                LoadListViewItems(applistView, tmp);
             }
         }
 
-        private void LoadAppData(List<AppMember> member)
+        private void _cbw_DoWork(object sender, DoWorkEventArgs e)
         {
-            applist = member;
-            applistView.Items.Clear();
+            GetIDName getidname;
+            try
+            {
+                if (string.IsNullOrWhiteSpace(ClipboardText))
+                {
+                    MessageBox.Show("请复制徽章页面的源代码!", "错误");
+                }
+                else
+                {
+                    getidname = new GetIDName(ClipboardText);
+                    getidname.Badlist = config.Blacklist;
+                    e.Result = getidname.Getid();
+                }
+            }
+            catch (Exception ex)
+            {
+                CMDprintError(ex.Message);
+            }
+        }
+
+        private void _cbw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+                Console.WriteLine("You canceled!");
+            else if (e.Error != null)
+                Console.WriteLine("Worker exception: " + e.Error.ToString());
+            else
+            {
+                try
+                {
+                    List<AppMember> tmp = (List<AppMember>)e.Result;
+                    cApplist.Clear();
+                    cApplist.AddRange(tmp);
+                    LoadListViewItems(cApplistView, tmp);
+                }
+                catch (Exception ex)
+                {
+                    CMDprintError(ex.Message);
+                }
+
+            }
+        }
+
+        private void LoadListViewItems(ListView list, List<AppMember> member)
+        {
             if (member != null && member.Count > 0)
             {
-                for (int i = 0; i < member.Count; i++)
+                foreach (AppMember item in member)
                 {
                     ListViewItem lvi = new ListViewItem();
-                    lvi.Text = member[i].Id;
-                    lvi.SubItems.Add(member[i].Name);
-                    lvi.SubItems.Add(member[i].CardNum);
-                    lvi.SubItems.Add(member[i].Time);
-                    applistView.Items.Add(lvi);
+                    lvi.Text = item.Id;
+                    lvi.Checked = true;
+                    lvi.SubItems.Add(item.Name);
+                    lvi.SubItems.Add(item.CardNum);
+                    lvi.SubItems.Add(item.Time);
+                    list.Items.Add(lvi);
                 }
             }
         }
+        #endregion
 
-#endregion
-
-#region 自动更新
+        #region 自动更新
         public void checkUpdate()
         {
             if (string.IsNullOrEmpty(config.UpdateUrl))
@@ -624,21 +557,219 @@ namespace idleApp
 
             SoftUpdate app = new SoftUpdate(config.UpdateUrl, Application.ExecutablePath, "zha7idle");
             try
-            {               
-                if (app.IsUpdate && MessageBox.Show(string.Format("检查到新版本{0}，是否更新？\r\n更新说明:\r\n{1}", app.NewVerson, app.UpdateHelp), "Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                MyMessageForm mMsgForm = new MyMessageForm();
+                if (app.IsUpdate && mMsgForm.Show(string.Format("检查到新版本{0}，是否更新？\r\n更新说明:\r\n{1}", app.NewVerson, app.UpdateHelp), "更新日志", MyMessageForm.MessageButton.YesNo) == DialogResult.Yes)
                 {
                     upform = new UpdateForm(app);
                     upform.ShowDialog();
                 }
+                tmpnotice = app.Notice;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-
-
         }
 
         #endregion
+
+        #region 事件
+
+        private void getIDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (applistView.Items.Count > 0)
+            {
+                if (DialogResult.OK == MessageBox.Show("列表中已有数据，本次添加将清空原有数据!", "zhuyi", MessageBoxButtons.OKCancel))
+                {
+                    applistView.Items.Clear();
+                    ClipboardText = getClipboard();
+                    _bw.RunWorkerAsync("Start to Get");
+                }
+            }
+            else
+            {
+                ClipboardText = getClipboard();
+                _bw.RunWorkerAsync("Start to Get");
+            }
+        }
+
+        private void startToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AppIndex = 0;
+            startOrStopApp();
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Kill();
+            config.CardTime = Settings.Default.CardTime;
+            config.MaxGameNum = Settings.Default.MaxGameNum;
+            string content = JsonHelper.SerializeObject(config);
+            FileHelper.WriteFile("config.json", content);
+        }
+
+        private void clearTextbutton_Click(object sender, EventArgs e)
+        {
+            scrtextBox.Clear();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://zha7.net");
+        }
+
+        private void dELToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (applistView.SelectedItems.Count > 0)
+            {
+                applist.RemoveAt(applistView.SelectedItems[0].Index);
+                applistView.Items.Remove(applistView.SelectedItems[0]);
+            }
+        }
+
+        #region CardTime
+        private void timeTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //8是退格
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char)8)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void timeTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(timeTextBox.Text))
+                Settings.Default.CardTime = int.Parse(timeTextBox.Text);
+        }
+        #endregion
+
+        #region BlackList
+        private void blackTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //8是退格
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char)8)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void blackAddButton_Click(object sender, EventArgs e)
+        {
+            if (blackTextBox.Text != "输入黑名单ID")
+            {
+                ListViewItem lvi = new ListViewItem();
+                lvi.Text = blackTextBox.Text;
+                backlistView.Items.Add(lvi);
+                config.Blacklist.Add(blackTextBox.Text);
+            }
+        }
+
+        private void blackDelButton_Click(object sender, EventArgs e)
+        {
+            if (backlistView.SelectedItems.Count > 0)
+            {
+                if (!defBlackList.Contains(backlistView.SelectedItems[0].Text))
+                {
+                    config.Blacklist.RemoveAt(backlistView.SelectedItems[0].Index);
+                    backlistView.Items.Remove(backlistView.SelectedItems[0]);
+                }
+            }
+        }
+        #endregion
+
+        private void CmdrichTextBox_TextChanged(object sender, EventArgs e)
+        {
+            CmdrichTextBox.SelectionStart = CmdrichTextBox.Text.Length; //Set the current caret position at the end
+            CmdrichTextBox.ScrollToCaret(); //Now scroll it automatically
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl1.TabPages[tabControl1.SelectedIndex].Text == "控制台")
+            {
+                CmdtextBox.Focus();
+            }
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                notifyIcon1.Visible = true;
+                Hide();
+            }
+            else if (WindowState == FormWindowState.Normal)
+            {
+                notifyIcon1.Visible = false;
+            }
+        }
+
+        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+        }
+
+        private void twohourToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            StartAllTwoHour();
+        }
+
+        private void clearAppToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Kill();
+            CMDprint("清理进程");
+        }
+
+        private void cGetButton_Click(object sender, EventArgs e)
+        {
+            cApplistView.Items.Clear();
+            ClipboardText = getClipboard();
+            _cbw.RunWorkerAsync("Start to GetC");
+        }
+
+        private void cAddListButton_Click(object sender, EventArgs e)
+        {
+            if (cApplistView.CheckedItems.Count > 0)
+            {
+                List<AppMember> tmp = new List<AppMember>();
+                for (int i = 0; i < cApplistView.CheckedItems.Count; i++)
+                    tmp.Add(cApplist[cApplistView.CheckedItems[i].Index]);
+                LoadListViewItems(applistView, tmp);
+                applist.AddRange(tmp);
+            }
+            //CMDprint(string.Format("applistView.Count:{0} applist.Count:{1}", applistView.Items.Count, applist.Count));
+        }
+
+        #region MaxNum
+        private void gameNumTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //8是退格
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char)8)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void gameNumTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(gameNumTextBox.Text))
+            {
+                if (int.Parse(gameNumTextBox.Text) <= 30)
+                    Settings.Default.MaxGameNum = int.Parse(gameNumTextBox.Text);
+                else
+                {
+                    MessageBox.Show("上限最多为30");
+                    gameNumTextBox.Text = "30";
+                    Settings.Default.MaxGameNum = 30;
+                }
+            }                
+        }
+        #endregion
+
+        #endregion
+
     }
 }
